@@ -1,0 +1,28 @@
+.header {
+    margin-bottom: 10px;
+}
+.buttons button {
+    margin-right: 10px;
+}
+.buttons button:last-child {
+    margin-right: 0;
+}
+
+@media (max-width: 768px) {
+    .buttons button {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    .buttons__langs {
+        margin-top: 10px;
+    }
+    .buttons__langs button:first-child {
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .buttons__langs button:first-child {
+        margin-right: 5px;
+    }
+}
