@@ -1,8 +1,9 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { Grid, Typography, Select, Input, Button, Row, Col } from "antd";
+import React, { useEffect, useState } from "react";
+import { Row } from "antd";
 
 import Layout from "./layout/Layout";
-import { FirstForm, SecondForm, Stepper } from "./components";
+import { FirstForm, SecondForm } from "./components";
+import axios from "axios";
 
 const steps = [
   { title: "Заполните форму" },
@@ -10,10 +11,6 @@ const steps = [
   { title: "Выберите врача" },
   { title: "Выберите время приема" },
 ];
-
-const { useBreakpoint } = Grid;
-const { Text, Title } = Typography;
-const { Option } = Select;
 
 // const screens = {
 //   lg: 992,
@@ -27,7 +24,9 @@ const { Option } = Select;
 function App() {
   const [step, setStep] = useState(0);
 
-  const { md } = useBreakpoint();
+  const [IIN, setIIN] = useState("");
+  const [hospital, setHospital] = useState("Поликлиника прикрепления");
+  const [captchaResp, setCaptchaResp] = useState<string | null>(null);
 
   useEffect(() => {
     const getOrgListForTimetable = () => {
@@ -37,28 +36,57 @@ function App() {
     getOrgListForTimetable();
   }, []);
 
-  const submitFirstForm = () => {
-    setStep(1);
+  // Обработка 1 формы
+
+  const submitFirstForm = async () => {
+    const response = await axios.get(
+      `https://localhost:3032/getpatient?IIN=${IIN}`
+    );
+
+    console.log("response --> ", response);
+
+    if (hospital === "Поликлиника прикрепления") {
+      setStep(1);
+    } else {
+      setStep(1);
+    }
   };
 
-  const submitSecondForm = () => {
-    setStep(2);
-  };
+  // Обработка 2 формы
+
+  const saveAppointment = () => {};
+
   const goBackFromSecondForm = () => {
     setStep(0);
+  };
+
+  const handleSelectDoctor = () => {
+    setStep(3);
   };
 
   const renderForm = () => {
     switch (step) {
       case 0: {
-        return <FirstForm submitForm={submitFirstForm} />;
+        return (
+          <FirstForm
+            submitForm={submitFirstForm}
+            IIN={IIN}
+            setIIN={setIIN}
+            captchaResp={captchaResp}
+            setCaptchaResp={setCaptchaResp}
+            hospital={hospital}
+            setHospital={setHospital}
+            steps={steps}
+          />
+        );
       }
 
       case 1: {
         return (
           <SecondForm
             goBack={goBackFromSecondForm}
-            submitForm={submitSecondForm}
+            submitForm={saveAppointment}
+            steps={steps}
           />
         );
       }
@@ -71,14 +99,7 @@ function App() {
 
   return (
     <Layout>
-      <Row justify="center">
-        {md && (
-          <Col span={24}>
-            <Stepper steps={steps} current={step} status="process" />
-          </Col>
-        )}
-        {renderForm()}
-      </Row>
+      <Row justify="center">{renderForm()}</Row>
     </Layout>
   );
 }
