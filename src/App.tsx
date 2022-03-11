@@ -1,9 +1,8 @@
-import React from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { Grid, Typography, Select, Input, Button, Row, Col } from "antd";
-import ReCAPTCHA from "react-google-recaptcha";
 
 import Layout from "./layout/Layout";
-import { Preloader, Stepper } from "./components";
+import { FirstForm, SecondForm, Stepper } from "./components";
 
 const steps = [
   { title: "Заполните форму" },
@@ -16,53 +15,70 @@ const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
 const { Option } = Select;
 
+// const screens = {
+//   lg: 992,
+//   md: 768,
+//   sm: 576,
+//   xl: 1200,
+//   xs: true,
+//   xxl: 1600,
+// };
+
 function App() {
+  const [step, setStep] = useState(0);
+
   const { md } = useBreakpoint();
 
-  const onChange = (token: string | null) => {
-    console.log("Captcha value:", token);
+  useEffect(() => {
+    const getOrgListForTimetable = () => {
+      console.log("getOrgListForTimetable ....");
+    };
+
+    getOrgListForTimetable();
+  }, []);
+
+  const submitFirstForm = () => {
+    setStep(1);
+  };
+
+  const submitSecondForm = () => {
+    setStep(2);
+  };
+  const goBackFromSecondForm = () => {
+    setStep(0);
+  };
+
+  const renderForm = () => {
+    switch (step) {
+      case 0: {
+        return <FirstForm submitForm={submitFirstForm} />;
+      }
+
+      case 1: {
+        return (
+          <SecondForm
+            goBack={goBackFromSecondForm}
+            submitForm={submitSecondForm}
+          />
+        );
+      }
+
+      default: {
+        return null;
+      }
+    }
   };
 
   return (
     <Layout>
-      <Row align="middle" justify="center">
-        <Col span={24}>
-          <Stepper steps={steps} current={0} status="finish" />
-        </Col>
-        <Col xs={24} lg={20} className="iin_form">
-          <Row justify="center">
-            <Title>Запись на приём online</Title>
-          </Row>
-          <Row justify="center">
-            <Col lg={14} className="input_wrapper">
-              <Text className="subtitle">Выберите организацию</Text>
-              <Select
-                defaultValue="Поликлиника прикрепления"
-                size="large"
-                className="select"
-              >
-                <Option value="Поликлиника прикрепления">
-                  Поликлиника прикрепления
-                </Option>
-                <Option value="lucy">Lucy</Option>
-                <Option value="disabled" disabled>
-                  Disabled
-                </Option>
-                <Option value="Yiminghe">yiminghe</Option>
-              </Select>
-            </Col>
-            <Col lg={14} className="input_wrapper">
-              <Text className="subtitle">Введите ИИН</Text>
-              <Input placeholder="Введите ИИН" size="large" className="input" />
-            </Col>
-          </Row>
-        </Col>
-        <ReCAPTCHA
-          sitekey="6LfDIvIbAAAAADAA-OmE0fOpkthXu2BYqzgHjqFI"
-          onChange={onChange}
-        />
+      <Row justify="center">
+        {md && (
+          <Col span={24}>
+            <Stepper steps={steps} current={step} status="process" />
+          </Col>
+        )}
+        {renderForm()}
       </Row>
-      {/* <Preloader /> */}
     </Layout>
   );
 }

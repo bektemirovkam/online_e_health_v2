@@ -10,7 +10,7 @@ const Layout: FC<LayoutProps> = ({ children, ...props }) => {
   return (
     <Col span={24} {...props}>
       <Row justify="center">
-        <Col xs={20} xl={12} className={styles.content}>
+        <Col xxl={14} xl={20} xs={24} className={styles.content}>
           <Header />
           <main className={styles.main}>{children}</main>
           <Footer />
