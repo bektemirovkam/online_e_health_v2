@@ -1,4 +1,4 @@
-import { IStep } from "../Stepper/Stepper.props";
+import { IOrgInfoByAppointment } from "./../../models/Appointment";
 
 export interface FirstFormProps {
   submitForm: () => void;
@@ -8,5 +8,5 @@ export interface FirstFormProps {
   setHospital: (hospital: string) => void;
   captchaResp: string | null;
   setCaptchaResp: (captcha: string | null) => void;
-  steps: IStep[];
+  orgList?: IOrgInfoByAppointment[];
 }

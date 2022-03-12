@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Row } from "antd";
+import { Col, Row, Grid } from "antd";
 
 import Layout from "./layout/Layout";
-import { FirstForm, SecondForm } from "./components";
+import { FirstForm, SecondForm, Stepper } from "./components";
 import axios from "axios";
+import { IUserData } from "./models/Appointment";
+import { useGetOrgsListForAppointmentQuery } from "./services/AppointmentService";
 
 const steps = [
   { title: "Заполните форму" },
@@ -21,12 +23,20 @@ const steps = [
 //   xxl: 1600,
 // };
 
+const { useBreakpoint } = Grid;
+
 function App() {
   const [step, setStep] = useState(0);
-
   const [IIN, setIIN] = useState("");
   const [hospital, setHospital] = useState("Поликлиника прикрепления");
   const [captchaResp, setCaptchaResp] = useState<string | null>(null);
+
+  const { md } = useBreakpoint();
+  const {
+    data: orgList,
+    isLoading: orgsListLoading,
+    error: orgsListError,
+  } = useGetOrgsListForAppointmentQuery();
 
   useEffect(() => {
     const getOrgListForTimetable = () => {
@@ -39,11 +49,11 @@ function App() {
   // Обработка 1 формы
 
   const submitFirstForm = async () => {
-    const response = await axios.get(
-      `https://localhost:3032/getpatient?IIN=${IIN}`
+    const { data } = await axios.get<IUserData>(
+      `https://localhost:3032/patient?IIN=${IIN}`
     );
 
-    console.log("response --> ", response);
+    console.log("data.FIO --> ", data.FIO);
 
     if (hospital === "Поликлиника прикрепления") {
       setStep(1);
@@ -76,7 +86,7 @@ function App() {
             setCaptchaResp={setCaptchaResp}
             hospital={hospital}
             setHospital={setHospital}
-            steps={steps}
+            orgList={orgList?.Orgs}
           />
         );
       }
@@ -86,7 +96,6 @@ function App() {
           <SecondForm
             goBack={goBackFromSecondForm}
             submitForm={saveAppointment}
-            steps={steps}
           />
         );
       }
@@ -99,7 +108,14 @@ function App() {
 
   return (
     <Layout>
-      <Row justify="center">{renderForm()}</Row>
+      <Row justify="center">
+        {md && (
+          <Col span={24}>
+            <Stepper steps={steps} current={step} status="process" />
+          </Col>
+        )}
+        {renderForm()}
+      </Row>
     </Layout>
   );
 }

@@ -4,16 +4,16 @@ import { IGetOrgListForAppointment } from "../models/Appointment";
 export const appointmentApi = createApi({
   reducerPath: "appointmentApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://srvbase.e-health.kz:4343/sb/hs/PatientCab/",
+    baseUrl: "https://localhost:3032/",
   }),
   endpoints: (builder) => ({
-    getOrgsListForAppointment: builder.query<
-      IGetOrgListForAppointment,
-      undefined
-    >({
+    getOrgsListForAppointment: builder.query<IGetOrgListForAppointment, void>({
       query: () => ({
-        url: "GetOrgListForAppointment",
+        url: "appointment-orgs",
       }),
     }),
   }),
+  //TODO: для получение всех организаций в которые есть запись
 });
+
+export const { useGetOrgsListForAppointmentQuery } = appointmentApi;
