@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Col, Row, Grid } from "antd";
 
 import Layout from "./layout/Layout";
-import { FirstForm, SecondForm, Stepper } from "./components";
-import axios from "axios";
-import { IUserData } from "./models/Appointment";
-import { useGetOrgsListForAppointmentQuery } from "./services/AppointmentService";
+import { FirstForm, Preloader, SecondForm, Stepper } from "./components";
+import { useAppDispatch, useAppSelector } from "./hooks/redux";
+import { fetchUserByIIN } from "./store/appointment/appointmentSlice";
+import Title from "antd/lib/typography/Title";
+import Text from "antd/lib/typography/Text";
 
 const steps = [
   { title: "Заполните форму" },
@@ -32,11 +33,14 @@ function App() {
   const [captchaResp, setCaptchaResp] = useState<string | null>(null);
 
   const { md } = useBreakpoint();
-  const {
-    data: orgList,
-    isLoading: orgsListLoading,
-    error: orgsListError,
-  } = useGetOrgsListForAppointmentQuery();
+
+  const dispatch = useAppDispatch();
+
+  const userError = useAppSelector((state) => state.appointment.userDataError);
+  const userData = useAppSelector((state) => state.appointment.userData);
+  const userLoading = useAppSelector(
+    (state) => state.appointment.userDataLoading
+  );
 
   useEffect(() => {
     const getOrgListForTimetable = () => {
@@ -49,17 +53,12 @@ function App() {
   // Обработка 1 формы
 
   const submitFirstForm = async () => {
-    const { data } = await axios.get<IUserData>(
-      `https://localhost:3032/patient?IIN=${IIN}`
-    );
-
-    console.log("data.FIO --> ", data.FIO);
-
-    if (hospital === "Поликлиника прикрепления") {
-      setStep(1);
-    } else {
-      setStep(1);
-    }
+    dispatch(fetchUserByIIN(IIN));
+    // if (hospital === "Поликлиника прикрепления") {
+    //   setStep(1);
+    // } else {
+    //   setStep(1);
+    // }
   };
 
   // Обработка 2 формы
@@ -86,7 +85,7 @@ function App() {
             setCaptchaResp={setCaptchaResp}
             hospital={hospital}
             setHospital={setHospital}
-            orgList={orgList?.Orgs}
+            orgList={[]}
           />
         );
       }
@@ -114,7 +113,9 @@ function App() {
             <Stepper steps={steps} current={step} status="process" />
           </Col>
         )}
-        {renderForm()}
+        {userError && <Title>{userError}</Title>}
+        {userLoading ? <Preloader /> : renderForm()}
+        {userData && <Text>{JSON.stringify(userData, null, 2)}</Text>}
       </Row>
     </Layout>
   );

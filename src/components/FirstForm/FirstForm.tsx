@@ -62,18 +62,19 @@ export const FirstForm: FC<FirstFormProps> = ({
           />
         </Col>
       </Row>
-      <Row justify="center" className="captcha">
+      {/* <Row justify="center" className="captcha">
         <ReCAPTCHA
           sitekey="6LfDIvIbAAAAADAA-OmE0fOpkthXu2BYqzgHjqFI"
           onChange={onChange}
         />
-      </Row>
+      </Row> */}
       <Row justify="center">
         <Button
           type="primary"
           size="large"
           disabled={
-            IIN.length !== 12 || !Boolean(captchaResp) || !Boolean(hospital)
+            // !Boolean(captchaResp) ||
+            IIN.length !== 12 || !Boolean(hospital)
           }
           onClick={submitForm}
         >
