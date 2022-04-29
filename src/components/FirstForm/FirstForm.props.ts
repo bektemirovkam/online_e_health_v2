@@ -1,4 +1,4 @@
-import { IOrgInfoByAppointment } from "./../../models/Appointment";
+import { OrgInfoByAppointmentType } from "../../models/Hospital";
 
 export interface FirstFormProps {
   submitForm: () => void;
@@ -8,5 +8,5 @@ export interface FirstFormProps {
   setHospital: (hospital: string) => void;
   captchaResp: string | null;
   setCaptchaResp: (captcha: string | null) => void;
-  orgList?: IOrgInfoByAppointment[];
+  orgList?: OrgInfoByAppointmentType[];
 }

@@ -1,17 +1,17 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-
-import appointmentReducer from "./appointment/appointmentSlice";
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
+import { appReducer } from "./reducers/app";
+import { hospitalsReducer } from "./reducers/hospitals";
+import { appointmentReducer } from "./reducers/appointment";
+import { sickListReducer } from "./reducers/sickList";
 
 const rootReducer = combineReducers({
+  sickList: sickListReducer,
+  app: appReducer,
+  hospitals: hospitalsReducer,
   appointment: appointmentReducer,
 });
 
-export const setupStore = () => {
-  return configureStore({
-    reducer: rootReducer,
-  });
-};
+export type AppStateType = ReturnType<typeof rootReducer>;
 
-export type RootState = ReturnType<typeof rootReducer>;
-export type AppStore = ReturnType<typeof setupStore>;
-export type AppDispatch = AppStore["dispatch"];
+export default createStore(rootReducer, applyMiddleware(thunk));

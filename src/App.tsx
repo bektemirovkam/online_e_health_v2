@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Col, Row, Grid } from "antd";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Layout from "./layout/Layout";
 import { FirstForm, Preloader, SecondForm, Stepper } from "./components";
-import { useAppDispatch, useAppSelector } from "./hooks/redux";
-import { fetchUserByIIN } from "./store/appointment/appointmentSlice";
+
 import Title from "antd/lib/typography/Title";
 import Text from "antd/lib/typography/Text";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAppointmentErrorMessageState,
+  getAppointmentUserDataLoadingState,
+  getAppointmentUserDataState,
+} from "./store/selectors/appointment";
+import { getHospitalsForAppointment } from "./store/actions/hospitals";
+import { getHospitalsForAppointmentState } from "./store/selectors/hospitals";
+import { getAppointmentUserData } from "./store/actions/appointment";
+import { AppointmentPage, HouseCallPage, SickListPage } from "./pages";
 
 const steps = [
   { title: "Заполните форму" },
@@ -34,26 +44,24 @@ function App() {
 
   const { md } = useBreakpoint();
 
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
 
-  const userError = useAppSelector((state) => state.appointment.userDataError);
-  const userData = useAppSelector((state) => state.appointment.userData);
-  const userLoading = useAppSelector(
-    (state) => state.appointment.userDataLoading
+  const appointmentError = useSelector(getAppointmentErrorMessageState);
+  const appointmentData = useSelector(getAppointmentUserDataState);
+  const appointmentDataLoading = useSelector(
+    getAppointmentUserDataLoadingState
   );
 
-  useEffect(() => {
-    const getOrgListForTimetable = () => {
-      console.log("getOrgListForTimetable ....");
-    };
+  const hospitalsForAppointment = useSelector(getHospitalsForAppointmentState);
 
-    getOrgListForTimetable();
-  }, []);
+  useEffect(() => {
+    dispatch(getHospitalsForAppointment());
+  }, [dispatch]);
 
   // Обработка 1 формы
 
   const submitFirstForm = async () => {
-    dispatch(fetchUserByIIN(IIN));
+    dispatch(getAppointmentUserData(IIN));
     // if (hospital === "Поликлиника прикрепления") {
     //   setStep(1);
     // } else {
@@ -85,7 +93,7 @@ function App() {
             setCaptchaResp={setCaptchaResp}
             hospital={hospital}
             setHospital={setHospital}
-            orgList={[]}
+            orgList={hospitalsForAppointment}
           />
         );
       }
@@ -108,14 +116,22 @@ function App() {
   return (
     <Layout>
       <Row justify="center">
-        {md && (
+        <Routes>
+          <Route path="/appointment" element={<AppointmentPage />} />
+          <Route path="/house-call" element={<HouseCallPage />} />
+          <Route path="/sicklist" element={<SickListPage />} />
+          <Route path="*" element={<Navigate to="/appointment" />} />
+        </Routes>
+        {/* {md && (
           <Col span={24}>
             <Stepper steps={steps} current={step} status="process" />
           </Col>
         )}
-        {userError && <Title>{userError}</Title>}
-        {userLoading ? <Preloader /> : renderForm()}
-        {userData && <Text>{JSON.stringify(userData, null, 2)}</Text>}
+        {appointmentError && <Title>{appointmentError}</Title>}
+        {appointmentDataLoading ? <Preloader /> : renderForm()}
+        {appointmentData && (
+          <Text>{JSON.stringify(appointmentData, null, 2)}</Text>
+        )} */}
       </Row>
     </Layout>
   );

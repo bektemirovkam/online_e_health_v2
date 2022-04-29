@@ -1,55 +1,124 @@
-export interface IUserData {
-  ErrorCode: 0 | 10 | 100 | 110 | 120 | 130 | 140 | 200 | 300;
+export type AppointmentInfoType = {
+  orgName?: string;
+  doctorName?: string;
+  orgId?: string;
+  timeStart?: string;
+  data?: string;
+  specializationName?: string;
+  patientName?: string;
+  room_description?: string;
+  schedule_name?: string;
+  apiVersion: "1" | "2";
+};
+
+export type HouseCallInfoType = {
+  orgName: string;
+  orgId: string;
+  patientName: string;
+  doctorName: string;
+};
+
+export type SaveAppointmentResponseType = {
+  ReceiptNumber?: string;
+  GUID?: string;
+  RegDateTime?: string;
   ErrorDesc: string;
-  RegAvailable: 0 | 1;
-  RegToProfileSpecs?: boolean;
-  ShowRegularExamsNotice?: boolean;
-  ServerDate: string;
-  StatusOSMS: string;
-  FIO?: string;
-  Address?: string;
-  PhoneNumber?: string;
-  BirthDay?: string;
-  AttachmentID?: string;
-  Attachment?: string;
-  TerritoryID?: string;
-  Territory?: string;
-  DoctorID?: string;
-  Doctor?: string;
-  HomeCallAvailable?: 0 | 1;
-  AttachmentAddress?: string;
-  DoctorBuilding?: string;
-  DoctorBuildingAddress?: string;
-  OrgErrors?: IOrgError[];
-  ED_TextFluoro?: string;
-  ED_TextExam?: string;
-  ED_TextRW?: string;
-  ED_LastFluoroDate?: string;
-  ED_LastExamDate?: string;
-  ED_LastRWDate?: string;
-  ED_FluoroIsNeeding?: boolean;
-  ED_ExamIsNeeding?: boolean;
-  ED_RWIsNeeding?: boolean;
-  ED_ShowMessage?: boolean;
-  ED_RegAvailable?: boolean;
-}
+  ErrorCode:
+    | 0
+    | 2
+    | 10
+    | 100
+    | 110
+    | 200
+    | 300
+    | 310
+    | 400
+    | 410
+    | 500
+    | 510
+    | 600
+    | 610
+    | 700
+    | 800
+    | 900
+    | 910
+    | 920
+    | 930
+    | 1000
+    | 1100;
+};
 
-export interface IOrgError {
-  OrgID: string;
-  Name: string;
-  ErrorText: string;
-}
-
-export interface IOrgInfoByAppointment {
-  OrgID: string;
-  Name: string;
-  ShowMessage: boolean;
-  MessageText: string;
-  DisableDoctorSelection: boolean;
-}
-
-export interface IGetOrgListForAppointment {
+export type SaveDoctorCallResponseType = {
+  RegDateTime?: string;
+  GUID?: string;
   ErrorDesc: string;
-  ErrorCode: 0 | 100;
-  Orgs: IOrgInfoByAppointment[];
-}
+  ErrorCode:
+    | 0
+    | 2
+    | 10
+    | 100
+    | 200
+    | 400
+    | 500
+    | 600
+    | 610
+    | 700
+    | 800
+    | 900
+    | 910
+    | 1000
+    | 1010
+    | 1020
+    | 1100;
+};
+
+export type СancelReceptionResponseType = {
+  UnegDateTime?: string;
+  ErrorDesc: string;
+  ErrorCode: 0 | 2 | 10 | 100 | 200 | 210 | 300 | 400 | 500 | 510 | 520 | 530;
+};
+
+export type HouseCallDataHistoryType = SaveDoctorCallResponseType &
+  HouseCallInfoType & {
+    iin: string;
+    dateCancel: null | string;
+  };
+
+export type AppointmentDataHistoryType = SaveAppointmentResponseType &
+  AppointmentInfoType & {
+    iin: string;
+    dateCancel: null | string;
+  };
+
+export type RecordMetodsType = "specialization" | "FIO";
+
+// ******************************************************  NEW API  *************************************************************** //
+
+export type CreateAppointmentRequestType = {
+  token: string;
+  schedule_id: string;
+  iin: string; // хэш SHA1 от ИИНа пациента, на которого создаётся запись на приём.
+  appointment_date: string;
+  appointment_duration: number;
+  destination_mo: string;
+  is_online?: boolean;
+  url_link?: string;
+};
+export type CreateAppointmentResponseType = {
+  success: boolean;
+  error_message: string;
+  appointment_id: string;
+};
+
+export type CancelAppointmentRequestType = {
+  token: string;
+  appointment_id: string;
+  destination_mo: string;
+};
+export type CancelAppointmentResponseType = {
+  success: boolean;
+  error_message: string;
+};
+
+export type NGAppointmentDataHistoryType = CreateAppointmentResponseType &
+  AppointmentInfoType;
