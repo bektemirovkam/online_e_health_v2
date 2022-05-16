@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { Button, Col, Modal, Row, Typography, Segmented } from "antd";
 
-import { SecondFormProps } from "./SecondForm.props";
+import { RecordAttachmentType, SecondFormProps } from "./SecondForm.props";
 import { useDispatch, useSelector } from "react-redux";
 
 import styles from "./SecondForm.module.css";
@@ -23,7 +23,7 @@ export const SecondForm: FC<SecondFormProps> = ({
   clearError,
   hospital,
 }) => {
-  const [recordType, setRecordType] = useState<SegmentedValue>(
+  const [recordType, setRecordType] = useState<RecordAttachmentType>(
     "Запись к участковому врачу"
   );
 
@@ -61,8 +61,22 @@ export const SecondForm: FC<SecondFormProps> = ({
     }
   }, [appointmentUserData, dispatch, hospital.value]);
 
+  useEffect(() => {
+    if (
+      hospital.value === "0" &&
+      recordType === "Запись к узким специалистам" &&
+      !appointmentUserData?.RegToProfileSpecs
+    ) {
+      dispatch(
+        appointmentActions.setAppointmentError(
+          "Запись к узким специалистам недоступна"
+        )
+      );
+    }
+  }, [recordType, appointmentUserData, dispatch, hospital.value]);
+
   const handleChangeRecordType = (type: SegmentedValue) => {
-    setRecordType(type);
+    setRecordType(type as RecordAttachmentType);
   };
 
   if (appointmentUserDataLoading) {

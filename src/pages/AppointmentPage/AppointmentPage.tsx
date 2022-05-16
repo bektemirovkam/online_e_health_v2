@@ -1,30 +1,19 @@
 import { Row } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FirstForm, SecondForm, Stepper } from "../../components";
 import { ISelectHospital } from "../../components/FirstForm/FirstForm.props";
-import { OrgInfoByAppointmentType } from "../../models/Hospital";
 import {
   appointmentActions,
   getAppointmentUserData,
 } from "../../store/actions/appointment";
-import {
-  getHospitalsForAppointment,
-  hospitalsActions,
-} from "../../store/actions/hospitals";
-import {
-  getAppointmentErrorMessageState,
-  getAppointmentUserDataLoadingState,
-  getAppointmentUserDataState,
-} from "../../store/selectors/appointment";
-import {
-  getHospitalsErrorState,
-  getHospitalsForAppointmentState,
-} from "../../store/selectors/hospitals";
+import { hospitalsActions } from "../../store/actions/hospitals";
+import { getAppointmentErrorMessageState } from "../../store/selectors/appointment";
+import { getHospitalsErrorState } from "../../store/selectors/hospitals";
 
 const steps = [
   { title: "Заполните форму" },
-  { title: "Выберите специализацию" },
+  { title: "Информация" },
   { title: "Выберите врача" },
   { title: "Выберите время приема" },
 ];
