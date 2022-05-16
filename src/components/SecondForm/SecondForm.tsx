@@ -1,60 +1,107 @@
-import React, { FC, useState } from "react";
-import { Button, Col, Row, Select, Typography } from "antd";
+import React, { FC, useEffect, useState } from "react";
+import { Button, Col, Modal, Row, Typography, Segmented } from "antd";
 
 import { SecondFormProps } from "./SecondForm.props";
+import { useDispatch, useSelector } from "react-redux";
 
-const { Title, Text } = Typography;
-const { Option } = Select;
+import styles from "./SecondForm.module.css";
+import {
+  getAppointmentUserDataLoadingState,
+  getAppointmentUserDataState,
+  getAppointmentErrorMessageState,
+} from "./../../store/selectors/appointment";
+import { Preloader } from "../Preloader/Preloader";
+import UserDataBox from "../UserDataBox/UserDataBox";
+import { appointmentActions } from "../../store/actions/appointment";
+import { SegmentedValue } from "antd/lib/segmented";
 
-export const SecondForm: FC<SecondFormProps> = ({ goBack, submitForm }) => {
-  const [time, setTime] = useState("14:00");
-  const [date, setDate] = useState("20200112");
+const { Text } = Typography;
 
-  const handleChangeTime = (time: string) => {
-    setTime(time);
+export const SecondForm: FC<SecondFormProps> = ({
+  goBack,
+  submitForm,
+  clearError,
+  hospital,
+}) => {
+  const [recordType, setRecordType] = useState<SegmentedValue>(
+    "Запись к участковому врачу"
+  );
+
+  const appointmentUserData = useSelector(getAppointmentUserDataState);
+  const appointmentUserDataLoading = useSelector(
+    getAppointmentUserDataLoadingState
+  );
+  const appointmentError = useSelector(getAppointmentErrorMessageState);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (appointmentError) {
+      Modal.error({
+        title: "Ошибка",
+        content: appointmentError,
+        onOk: clearError,
+      });
+    }
+  }, [appointmentError, clearError]);
+
+  useEffect(() => {
+    if (appointmentUserData && hospital.value === "0") {
+      if (appointmentUserData.ErrorCode !== 0) {
+        dispatch(
+          appointmentActions.setAppointmentError(appointmentUserData.ErrorDesc)
+        );
+      } else if (appointmentUserData.RegAvailable !== 1) {
+        dispatch(
+          appointmentActions.setAppointmentError(
+            "Запись в мед.организацию прикрепления пациента недоступна"
+          )
+        );
+      }
+    }
+  }, [appointmentUserData, dispatch, hospital.value]);
+
+  const handleChangeRecordType = (type: SegmentedValue) => {
+    setRecordType(type);
   };
 
-  const handleChangeDate = (date: string) => {
-    setDate(date);
-  };
+  if (appointmentUserDataLoading) {
+    return <Preloader />;
+  }
 
   return (
-    <Col xl={14} lg={16} md={20} sm={24} className="form">
+    <Col className="form">
       <Row justify="center">
-        <Title className="title">Запись на приём online</Title>
+        {appointmentUserData && (
+          <UserDataBox
+            appointmentUserData={appointmentUserData}
+            title={<Text className={styles.title}>Информация о пациенте</Text>}
+            column={{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }}
+            bordered
+          />
+        )}
       </Row>
-      <Row justify="center">
-        <Col md={14} sm={20} className="input_wrapper">
-          <Text className="subtitle">Выберите дату</Text>
-          <Select
-            defaultValue={date}
-            size="large"
-            className="select"
-            onChange={handleChangeDate}
-          >
-            <Option value="20200112">12 января 2022</Option>
-            <Option value="20200113">13 января 2022</Option>
-            <Option value="20200114">14 января 2022</Option>
-            <Option value="20200115">15 января 2022</Option>
-          </Select>
-        </Col>
-        <Col md={14} sm={20} className="input_wrapper">
-          <Text className="subtitle">Выберите время</Text>
-          <Select
-            defaultValue={time}
-            size="large"
-            className="select"
-            onChange={handleChangeTime}
-          >
-            <Option value="14:00">14:00</Option>
-            <Option value="14:20">14:20</Option>
-            <Option value="14:40">14:40</Option>
-            <Option value="15:00">15:00</Option>
-          </Select>
-        </Col>
-      </Row>
-
-      <Row justify="space-between">
+      {hospital.value === "0" && (
+        <>
+          <Row justify="center">
+            <Text className={styles.recordTypeTitle}>
+              Куда хотите записаться?
+            </Text>
+          </Row>
+          <Row justify="center" className={styles.recorType}>
+            <Segmented
+              options={[
+                "Запись к участковому врачу",
+                "Запись к узким специалистам",
+              ]}
+              onChange={handleChangeRecordType}
+              value={recordType}
+              size="large"
+            />
+          </Row>
+        </>
+      )}
+      <Row justify="space-between" className={styles.footer}>
         <Button size="large" type="default" onClick={goBack}>
           Назад
         </Button>

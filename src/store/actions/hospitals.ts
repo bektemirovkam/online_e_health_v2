@@ -15,6 +15,7 @@ import {
 import { ActionsCreatorsTypes } from "../../models/App";
 import { hospitalApi } from "../../services/hospitalApi";
 import { AppStateType } from "../store";
+import { appActions, AppActionsType } from "./app";
 
 export const hospitalsActions = {
   setHospitalsForAppointment: (
@@ -146,6 +147,7 @@ export const getHospitalsForAppointment =
       );
     } finally {
       dispatch(hospitalsActions.setHospitalsLoading(false));
+      dispatch(appActions.setAppInit(true));
     }
   };
 
@@ -157,5 +159,5 @@ type ThunkAcionType = ThunkAction<
   Promise<void>,
   AppStateType,
   unknown,
-  HospitalsActionsType
+  HospitalsActionsType | AppActionsType
 >;
