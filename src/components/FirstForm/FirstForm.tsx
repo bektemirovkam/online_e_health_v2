@@ -3,7 +3,7 @@ import { Button, Col, Input, Modal, Row, Select, Typography } from "antd";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useSelector } from "react-redux";
 
-import { FirstFormProps, ISelectHospital } from "./FirstForm.props";
+import { FirstFormProps } from "./FirstForm.props";
 import { getAppointmentErrorMessageState } from "../../store/selectors/appointment";
 import {
   getHospitalsErrorState,
@@ -17,8 +17,8 @@ export const FirstForm: FC<FirstFormProps> = ({
   submitForm,
   setCaptchaResp,
   setIIN,
-  setHospital,
-  hospital,
+  setHospitalId,
+  hospitalId,
   IIN,
   captchaResp,
   clearError,
@@ -35,8 +35,8 @@ export const FirstForm: FC<FirstFormProps> = ({
     setIIN(e.target.value);
   };
 
-  const handleChangeHospital = (_: string, hospital: ISelectHospital) => {
-    setHospital(hospital);
+  const handleChangeHospital = (hospitalId: string) => {
+    setHospitalId(hospitalId);
   };
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export const FirstForm: FC<FirstFormProps> = ({
             className="select"
             //@ts-ignore
             onChange={handleChangeHospital}
-            value={hospital.children}
+            value={hospitalId}
           >
             {hospitalsForAppointment &&
               hospitalsForAppointment.map((org) => (
@@ -97,7 +97,7 @@ export const FirstForm: FC<FirstFormProps> = ({
           size="large"
           disabled={
             // !Boolean(captchaResp) ||
-            IIN.length !== 12 || !Boolean(hospital)
+            IIN.length !== 12 || !Boolean(hospitalId)
           }
           onClick={submitForm}
         >

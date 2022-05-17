@@ -21,7 +21,7 @@ export const SecondForm: FC<SecondFormProps> = ({
   goBack,
   submitForm,
   clearError,
-  hospital,
+  hospitalId,
 }) => {
   const [recordType, setRecordType] = useState<RecordAttachmentType>(
     "Запись к участковому врачу"
@@ -46,7 +46,7 @@ export const SecondForm: FC<SecondFormProps> = ({
   }, [appointmentError, clearError]);
 
   useEffect(() => {
-    if (appointmentUserData && hospital.value === "0") {
+    if (appointmentUserData && hospitalId === "0") {
       if (appointmentUserData.ErrorCode !== 0) {
         dispatch(
           appointmentActions.setAppointmentError(appointmentUserData.ErrorDesc)
@@ -59,11 +59,11 @@ export const SecondForm: FC<SecondFormProps> = ({
         );
       }
     }
-  }, [appointmentUserData, dispatch, hospital.value]);
+  }, [appointmentUserData, dispatch, hospitalId]);
 
   useEffect(() => {
     if (
-      hospital.value === "0" &&
+      hospitalId === "0" &&
       recordType === "Запись к узким специалистам" &&
       !appointmentUserData?.RegToProfileSpecs
     ) {
@@ -73,7 +73,7 @@ export const SecondForm: FC<SecondFormProps> = ({
         )
       );
     }
-  }, [recordType, appointmentUserData, dispatch, hospital.value]);
+  }, [recordType, appointmentUserData, dispatch, hospitalId]);
 
   const handleChangeRecordType = (type: SegmentedValue) => {
     setRecordType(type as RecordAttachmentType);
@@ -95,7 +95,7 @@ export const SecondForm: FC<SecondFormProps> = ({
           />
         )}
       </Row>
-      {hospital.value === "0" && (
+      {hospitalId === "0" && (
         <>
           <Row justify="center">
             <Text className={styles.recordTypeTitle}>

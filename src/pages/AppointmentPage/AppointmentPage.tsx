@@ -1,8 +1,9 @@
 import { Row } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import { FirstForm, SecondForm, Stepper } from "../../components";
-import { ISelectHospital } from "../../components/FirstForm/FirstForm.props";
+import SelectDateForm from "../../components/SelectDateForm/SelectDateForm";
 import {
   appointmentActions,
   getAppointmentUserData,
@@ -18,17 +19,20 @@ const steps = [
   { title: "Выберите время приема" },
 ];
 
-const defaultHospital = {
-  key: "0",
-  value: "0",
-  children: "Поликлиника прикрепления",
-};
-
 const AppointmentPage = () => {
   const [step, setStep] = useState(0);
   const [IIN, setIIN] = useState("");
-  const [hospital, setHospital] = useState<ISelectHospital>(defaultHospital);
+  const [hospitalId, setHospitalId] = useState<string>("0");
   const [captchaResp, setCaptchaResp] = useState<string | null>(null);
+
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const orgId = searchParams.get("OrgID");
+    if (orgId) {
+      setHospitalId(orgId);
+    }
+  }, [searchParams]);
 
   const dispatch = useDispatch();
 
@@ -52,7 +56,6 @@ const AppointmentPage = () => {
   /***************************/
 
   // Обработка 2 формы
-
   const backFromSecondForm = () => {
     if (appointmentError) {
       dispatch(appointmentActions.setAppointmentError(null));
@@ -76,8 +79,8 @@ const AppointmentPage = () => {
             setIIN={setIIN}
             captchaResp={captchaResp}
             setCaptchaResp={setCaptchaResp}
-            hospital={hospital}
-            setHospital={setHospital}
+            hospitalId={hospitalId}
+            setHospitalId={setHospitalId}
             clearError={clearFirstFormError}
           />
         );
@@ -88,9 +91,12 @@ const AppointmentPage = () => {
             goBack={backFromSecondForm}
             submitForm={submitSecondForm}
             clearError={backFromSecondForm}
-            hospital={hospital}
+            hospitalId={hospitalId}
           />
         );
+
+      case 3:
+        return <SelectDateForm />;
 
       default:
         return null;
