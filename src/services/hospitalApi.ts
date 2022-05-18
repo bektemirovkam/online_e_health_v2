@@ -111,7 +111,7 @@ export const newHospitalApi = {
   //Получает список филиалов.
   getBranches: async (formData: GetBranchesRequestType) => {
     const { data } = await axios.post<GetBranchesResponseType>(
-      "getNGBranches",
+      "GetNGBranches",
       formData
     );
     return data;
@@ -120,7 +120,7 @@ export const newHospitalApi = {
   // Получает список специализаций по id СУР филиала
   getSpeciality: async (formData: GetSpecialityRequestType) => {
     const { data } = await axios.post<GetSpecialityResponseType>(
-      "getNGSpeciality",
+      "GetNGSpeciality",
       formData
     );
     return data;
@@ -132,7 +132,7 @@ export const newHospitalApi = {
   */
   getSchedule: async (formData: NewGetScheduleRequestType) => {
     const { data } = await axios.post<NewGetScheduleResponseType>(
-      "getNGSchedule",
+      "GetNGSchedule",
       formData
     );
     return data;
@@ -141,7 +141,7 @@ export const newHospitalApi = {
   // Получает свободные даты графика работы в указанный в запросе день.
   getAvailableDates: async (formData: GetAvailableDatesRequestType) => {
     const { data } = await axios.post<GetAvailableDatesResponseType>(
-      "getAvailableDates",
+      "GetAvailableDates",
       formData
     );
     return data;
@@ -150,7 +150,7 @@ export const newHospitalApi = {
   // Получает список всех врачей из графиков работы подразделения (филиала).
   getDoctors: async (formData: GetDoctorsRequestType) => {
     const { data } = await axios.post<GetDoctorsResponseType>(
-      "getNGDoctors",
+      "GetNGDoctors",
       formData
     );
     return data;
@@ -162,7 +162,7 @@ export const newHospitalApi = {
   */
   getSchedulesByDoctor: async (formData: GetSchedulesByDoctorRequestType) => {
     const { data } = await axios.post<GetSchedulesByDoctorResponseType>(
-      "getSchedulesByDoctor",
+      "GetSchedulesByDoctor",
       formData
     );
     return data;
@@ -174,7 +174,7 @@ export const newHospitalApi = {
     formData: GetDoctorsBySpecialityRequestType
   ) => {
     const { data } = await axios.post<GetDoctorsBySpecialityResponseType>(
-      "getDoctorsBySpeciality",
+      "GetDoctorsBySpeciality",
       formData
     );
     return data;
@@ -186,7 +186,7 @@ export const newHospitalApi = {
   */
   createAppointment: async (formData: CreateAppointmentRequestType) => {
     const { data } = await axios.post<CreateAppointmentResponseType>(
-      "createNGAppointment",
+      "CreateNGAppointment",
       formData
     );
     return data;

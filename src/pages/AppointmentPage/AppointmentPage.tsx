@@ -5,11 +5,20 @@ import { useSearchParams } from "react-router-dom";
 import { FirstForm, SecondForm, Stepper } from "../../components";
 import SelectDateForm from "../../components/SelectDateForm/SelectDateForm";
 import {
+  AvailableDateType,
+  AvailableScheduleItem,
+  ScheduleVariantsEnum,
+} from "../../models/Hospital";
+import {
   appointmentActions,
   getAppointmentUserData,
+  getSchedulesByDoctor,
 } from "../../store/actions/appointment";
 import { hospitalsActions } from "../../store/actions/hospitals";
-import { getAppointmentErrorMessageState } from "../../store/selectors/appointment";
+import {
+  getAppointmentErrorMessageState,
+  getAppointmentUserDataState,
+} from "../../store/selectors/appointment";
 import { getHospitalsErrorState } from "../../store/selectors/hospitals";
 
 const steps = [
@@ -25,6 +34,11 @@ const AppointmentPage = () => {
   const [hospitalId, setHospitalId] = useState<string>("0");
   const [captchaResp, setCaptchaResp] = useState<string | null>(null);
 
+  const [ngDate, setNgDate] = React.useState<string | null>(null);
+  const [ngTime, setNgTime] = React.useState<AvailableDateType | null>(null);
+  const [ngScheduleData, setNgScheduleData] =
+    React.useState<AvailableScheduleItem | null>(null);
+
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -38,6 +52,7 @@ const AppointmentPage = () => {
 
   const hospitalError = useSelector(getHospitalsErrorState);
   const appointmentError = useSelector(getAppointmentErrorMessageState);
+  const appointmentUserData = useSelector(getAppointmentUserDataState);
 
   // Обработка 1 формы
   const submitFirstForm = async () => {
@@ -65,7 +80,12 @@ const AppointmentPage = () => {
   };
 
   const submitSecondForm = () => {
-    console.log("2 form");
+    dispatch(
+      getSchedulesByDoctor("867", "7a914a5c-30c4-11ec-8b30-00155d0a8602", [
+        ScheduleVariantsEnum.NO_RESTRICTION,
+        ScheduleVariantsEnum.DISTRICT,
+      ])
+    );
   };
   /***************************/
 
