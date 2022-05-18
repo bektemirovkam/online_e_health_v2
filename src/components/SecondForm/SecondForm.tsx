@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect } from "react";
 import { Button, Col, Modal, Row, Typography, Segmented } from "antd";
 
-import { RecordAttachmentType, SecondFormProps } from "./SecondForm.props";
+import { SecondFormProps } from "./SecondForm.props";
 import { useDispatch, useSelector } from "react-redux";
 
 import styles from "./SecondForm.module.css";
@@ -14,6 +14,7 @@ import { Preloader } from "../Preloader/Preloader";
 import UserDataBox from "../UserDataBox/UserDataBox";
 import { appointmentActions } from "../../store/actions/appointment";
 import { SegmentedValue } from "antd/lib/segmented";
+import { RecordAttachmentType } from "../../models/Appointment";
 
 const { Text } = Typography;
 
@@ -22,11 +23,9 @@ export const SecondForm: FC<SecondFormProps> = ({
   submitForm,
   clearError,
   hospitalId,
+  recordType,
+  setRecordType,
 }) => {
-  const [recordType, setRecordType] = useState<RecordAttachmentType>(
-    "Запись к участковому врачу"
-  );
-
   const appointmentUserData = useSelector(getAppointmentUserDataState);
   const appointmentUserDataLoading = useSelector(
     getAppointmentUserDataLoadingState

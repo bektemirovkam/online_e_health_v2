@@ -11,84 +11,9 @@ export type AppointmentInfoType = {
   apiVersion: "1" | "2";
 };
 
-export type HouseCallInfoType = {
-  orgName: string;
-  orgId: string;
-  patientName: string;
-  doctorName: string;
-};
-
-export type SaveAppointmentResponseType = {
-  ReceiptNumber?: string;
-  GUID?: string;
-  RegDateTime?: string;
-  ErrorDesc: string;
-  ErrorCode:
-    | 0
-    | 2
-    | 10
-    | 100
-    | 110
-    | 200
-    | 300
-    | 310
-    | 400
-    | 410
-    | 500
-    | 510
-    | 600
-    | 610
-    | 700
-    | 800
-    | 900
-    | 910
-    | 920
-    | 930
-    | 1000
-    | 1100;
-};
-
-export type SaveDoctorCallResponseType = {
-  RegDateTime?: string;
-  GUID?: string;
-  ErrorDesc: string;
-  ErrorCode:
-    | 0
-    | 2
-    | 10
-    | 100
-    | 200
-    | 400
-    | 500
-    | 600
-    | 610
-    | 700
-    | 800
-    | 900
-    | 910
-    | 1000
-    | 1010
-    | 1020
-    | 1100;
-};
-
-export type СancelReceptionResponseType = {
-  UnegDateTime?: string;
-  ErrorDesc: string;
-  ErrorCode: 0 | 2 | 10 | 100 | 200 | 210 | 300 | 400 | 500 | 510 | 520 | 530;
-};
-
-export type HouseCallDataHistoryType = SaveDoctorCallResponseType &
-  HouseCallInfoType & {
-    iin: string;
-    dateCancel: null | string;
-  };
-
-export type AppointmentDataHistoryType = SaveAppointmentResponseType &
-  AppointmentInfoType & {
-    iin: string;
-    dateCancel: null | string;
-  };
+export type RecordAttachmentType =
+  | "Запись к участковому врачу"
+  | "Запись к узким специалистам";
 
 export type RecordMetodsType = "specialization" | "FIO";
 

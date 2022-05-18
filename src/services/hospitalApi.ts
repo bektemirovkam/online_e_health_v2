@@ -8,10 +8,8 @@ import {
   GetDoctorsRequestType,
   GetDoctorsResponseType,
   GetOrgListForAppointmentResponseType,
-  GetProfileSpecsDataResponseType,
   GetSchedulesByDoctorRequestType,
   GetSchedulesByDoctorResponseType,
-  GetScheduleResponseType,
   GetSpecialityRequestType,
   GetSpecialityResponseType,
   NewGetScheduleRequestType,
@@ -20,8 +18,6 @@ import {
 import {
   CreateAppointmentRequestType,
   CreateAppointmentResponseType,
-  SaveAppointmentResponseType,
-  SaveDoctorCallResponseType,
 } from "../models/Appointment";
 
 import axios from "../api/axios";
@@ -31,76 +27,6 @@ export const hospitalApi = {
     const { data } = await axios.get<GetOrgListForAppointmentResponseType>(
       "GetOrgListForAppointment"
     );
-    return data;
-  },
-
-  GetSchedule: async (
-    orgId: string,
-    IIN: string,
-    DoctorId = "",
-    profileId = ""
-  ) => {
-    const { data } = await axios.post<GetScheduleResponseType>("GetShedule", {
-      orgId,
-      IIN,
-      DoctorId,
-      profileId,
-    });
-    return data;
-  },
-
-  GetProfileSpecsData: async (orgId: string) => {
-    const { data } = await axios.post<GetProfileSpecsDataResponseType>(
-      "GetProfileSpecsData",
-      { orgId }
-    );
-    return data;
-  },
-
-  SaveAppointment: async (
-    iin: string,
-    orgId: string,
-    doctorId: string,
-    date: string,
-    timeStart: string,
-    timeEnd: string,
-    recordingMethod = 1,
-    cabinetId = "",
-    reason = "",
-    language = 1
-  ) => {
-    const { data } = await axios.post<SaveAppointmentResponseType>(
-      "SaveAppointment",
-      {
-        iin,
-        orgId,
-        doctorId,
-        date,
-        timeStart,
-        timeEnd,
-        recordingMethod,
-        cabinetId,
-        reason,
-        language,
-      }
-    );
-
-    return data;
-  },
-
-  SaveDoctorCall: async (
-    iin: string,
-    orgId: string,
-    phoneNumber: string,
-    reason = "",
-    recordingMethod = 1,
-    language = 1
-  ) => {
-    const { data } = await axios.post<SaveDoctorCallResponseType>(
-      "SaveDoctorCall",
-      { iin, orgId, phoneNumber, reason, recordingMethod, language }
-    );
-
     return data;
   },
 };

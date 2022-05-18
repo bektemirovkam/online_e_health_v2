@@ -13,6 +13,11 @@ import {
 const { Title, Text } = Typography;
 const { Option } = Select;
 
+const checkIIN = (IIN: string) => {
+  const regex = /^(\d{12})$/;
+  return regex.test(IIN);
+};
+
 export const FirstForm: FC<FirstFormProps> = ({
   submitForm,
   setCaptchaResp,
@@ -36,6 +41,7 @@ export const FirstForm: FC<FirstFormProps> = ({
   };
 
   const handleChangeHospital = (hospitalId: string) => {
+    //TODO: вывод ворнинга для областной
     setHospitalId(hospitalId);
   };
 
@@ -97,7 +103,7 @@ export const FirstForm: FC<FirstFormProps> = ({
           size="large"
           disabled={
             // !Boolean(captchaResp) ||
-            IIN.length !== 12 || !Boolean(hospitalId)
+            !checkIIN(IIN) || !Boolean(hospitalId)
           }
           onClick={submitForm}
         >

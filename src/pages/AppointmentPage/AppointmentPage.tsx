@@ -5,9 +5,15 @@ import { useSearchParams } from "react-router-dom";
 import { FirstForm, SecondForm, Stepper } from "../../components";
 import SelectDateForm from "../../components/SelectDateForm/SelectDateForm";
 import {
+  RecordAttachmentType,
+  RecordMetodsType,
+} from "../../models/Appointment";
+import {
   AvailableDateType,
   AvailableScheduleItem,
+  GetDoctorsItemType,
   ScheduleVariantsEnum,
+  SpecialitiesType,
 } from "../../models/Hospital";
 import {
   appointmentActions,
@@ -34,10 +40,21 @@ const AppointmentPage = () => {
   const [hospitalId, setHospitalId] = useState<string>("0");
   const [captchaResp, setCaptchaResp] = useState<string | null>(null);
 
+  const [recordType, setRecordType] = useState<RecordAttachmentType>(
+    "Запись к участковому врачу"
+  );
+
   const [ngDate, setNgDate] = React.useState<string | null>(null);
   const [ngTime, setNgTime] = React.useState<AvailableDateType | null>(null);
   const [ngScheduleData, setNgScheduleData] =
     React.useState<AvailableScheduleItem | null>(null);
+
+  const [method, setMethod] = React.useState<RecordMetodsType | null>(null);
+  const [ngSpeciality, setNGSpeciality] =
+    React.useState<SpecialitiesType | null>(null);
+  const [ngDoctor, setNGDoctor] = React.useState<GetDoctorsItemType | null>(
+    null
+  );
 
   const [searchParams] = useSearchParams();
 
@@ -80,13 +97,44 @@ const AppointmentPage = () => {
   };
 
   const submitSecondForm = () => {
-    dispatch(
-      getSchedulesByDoctor("867", "7a914a5c-30c4-11ec-8b30-00155d0a8602", [
-        ScheduleVariantsEnum.NO_RESTRICTION,
-        ScheduleVariantsEnum.DISTRICT,
-      ])
-    );
+    if (hospitalId === "0") {
+      handleAttachmentPolyclinic();
+    } else {
+      handleOtherHospitals();
+    }
   };
+
+  const handleAttachmentPolyclinic = () => {
+    if (
+      recordType === "Запись к участковому врачу" &&
+      appointmentUserData?.AttachmentID &&
+      appointmentUserData?.DoctorID
+    ) {
+      dispatch(
+        // getSchedulesByDoctor(appointmentUserData.AttachmentID, appointmentUserData.DoctorID, [
+        getSchedulesByDoctor("867", "7a914a5c-30c4-11ec-8b30-00155d0a8602", [
+          ScheduleVariantsEnum.NO_RESTRICTION,
+          ScheduleVariantsEnum.DISTRICT,
+        ])
+      );
+    } else {
+      //TODO: запись к узким
+    }
+  };
+
+  const handleOtherHospitals = () => {
+    //TODO: вывод ошибки раньше
+    const error = appointmentUserData?.OrgErrors?.find(
+      (item) => item.OrgID === hospitalId
+    );
+
+    if (error) {
+      dispatch(appointmentActions.setAppointmentError(error.ErrorText));
+    }
+
+    //TODO: запись к платным
+  };
+
   /***************************/
 
   const renderContent = () => {
@@ -112,6 +160,8 @@ const AppointmentPage = () => {
             submitForm={submitSecondForm}
             clearError={backFromSecondForm}
             hospitalId={hospitalId}
+            recordType={recordType}
+            setRecordType={setRecordType}
           />
         );
 

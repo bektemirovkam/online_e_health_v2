@@ -1,16 +1,8 @@
-import { NGAppointmentDataHistoryType } from "./../../models/Appointment";
-import {
-  AppointmentDataHistoryType,
-  HouseCallDataHistoryType,
-  SaveAppointmentResponseType,
-  SaveDoctorCallResponseType,
-} from "../../models/Appointment";
+import { NGAppointmentDataHistoryType } from "../../models/Appointment";
 import {
   BranchType,
   GetAvailableDatesResponseType,
   GetDoctorsItemType,
-  ProfilesType,
-  ScheduleType,
   SpecialitiesType,
 } from "../../models/Hospital";
 import { UserDataType } from "../../models/User";
@@ -18,21 +10,8 @@ import { AppointmentActionsType } from "../actions/appointment";
 
 const initialState = {
   isLoadingUserData: false,
-  isLoadingSchedule: false,
-  isLoadingProfileSpecs: false,
   userData: null as UserDataType | null,
   errorMessage: null as string | null,
-  schedule: null as ScheduleType | null,
-  profileSpecsData: null as ProfilesType[] | null,
-  saveHouseCallResult: null as
-    | HouseCallDataHistoryType
-    | SaveDoctorCallResponseType
-    | null,
-  saveAppointmentResult: null as
-    | AppointmentDataHistoryType
-    | SaveAppointmentResponseType
-    | null,
-  saveAppointmentLoading: false,
   /*       NEW API        */
   branches: null as BranchType[] | null,
   branchesLoading: false,
@@ -40,10 +19,8 @@ const initialState = {
   specialitiesLoading: false,
   doctors: [] as GetDoctorsItemType[],
   doctorsLoading: false,
-  // ngSchedules: null as string[] | null,
   ngSchedulesLoading: false,
   availableDates: null as GetAvailableDatesResponseType | null,
-  // availableDatesLoading: false,
   saveNGAppointmentResult: null as NGAppointmentDataHistoryType | null,
   saveNGAppointmentLoading: false,
 };
@@ -69,59 +46,10 @@ export const appointmentReducer = (
       };
     }
 
-    case "SET_APPOINTMENT_LOADING_SCHEDULE": {
-      return {
-        ...state,
-        isLoadingSchedule: action.payload,
-      };
-    }
-
-    case "SET_APPOINTMENT_LOADING_PROFILE_SPECS": {
-      return {
-        ...state,
-        isLoadingProfileSpecs: action.payload,
-      };
-    }
-
     case "SET_APPOINTMENT_ERROR": {
       return {
         ...state,
         errorMessage: action.payload,
-      };
-    }
-
-    case "SET_APPOINTMENT_SCHEDULE": {
-      return {
-        ...state,
-        schedule: action.payload,
-      };
-    }
-
-    case "SET_APPOINTMENT_PROFILE_SPECS": {
-      return {
-        ...state,
-        profileSpecsData: action.payload,
-      };
-    }
-
-    case "SET_HOUSE_CALL_RESULT": {
-      return {
-        ...state,
-        saveHouseCallResult: action.payload,
-      };
-    }
-
-    case "SET_SAVE_APPOINTMENT_RESULT": {
-      return {
-        ...state,
-        saveAppointmentResult: action.payload,
-      };
-    }
-
-    case "SET_SAVE_APPOINTMENT_LOADING": {
-      return {
-        ...state,
-        saveAppointmentLoading: action.payload,
       };
     }
 
@@ -169,13 +97,6 @@ export const appointmentReducer = (
       };
     }
 
-    // case "SET_NG_SCHEDULES": {
-    //   return {
-    //     ...state,
-    //     ngSchedules: action.payload,
-    //   };
-    // }
-
     case "SET_NG_SCHEDULES_LOADING": {
       return {
         ...state,
@@ -189,13 +110,6 @@ export const appointmentReducer = (
         availableDates: action.payload,
       };
     }
-
-    // case "SET_AVAILABLE_DATES_LOADING": {
-    //   return {
-    //     ...state,
-    //     availableDatesLoading: action.payload,
-    //   };
-    // }
 
     case "SET_SAVE_NG_APPOINTMENT_RESULT": {
       return {

@@ -13,27 +13,6 @@ export const getAppointmentErrorMessageState = (state: AppStateType) =>
 export const getAppointmentUserDataLoadingState = (state: AppStateType) =>
   getAppointmentState(state).isLoadingUserData;
 
-export const getAppointmentProfileSpecDataState = (state: AppStateType) =>
-  getAppointmentState(state).profileSpecsData;
-
-export const getAppointmentScheduleState = (state: AppStateType) =>
-  getAppointmentState(state).schedule;
-
-export const getAppointmentScheduleLoadingState = (state: AppStateType) =>
-  getAppointmentState(state).isLoadingSchedule;
-
-export const getAppointmentProfileSpecLoadingState = (state: AppStateType) =>
-  getAppointmentState(state).isLoadingProfileSpecs;
-
-export const getAppointmentHouseCallResultState = (state: AppStateType) =>
-  getAppointmentState(state).saveHouseCallResult;
-
-export const getSaveAppointmentResultState = (state: AppStateType) =>
-  getAppointmentState(state).saveAppointmentResult;
-
-export const getSaveAppointmentLoadingState = (state: AppStateType) =>
-  getAppointmentState(state).saveAppointmentLoading;
-
 /*  NEW API  */
 
 export const getBranchesState = (state: AppStateType) =>
@@ -52,8 +31,6 @@ export const getDoctorsState = (state: AppStateType) =>
 export const getDoctorsLoadingState = (state: AppStateType) =>
   getAppointmentState(state).doctorsLoading;
 
-// export const getNGScheduleState = (state: AppStateType) =>
-//   getAppointmentState(state).ngSchedules;
 export const getNGScheduleLoadingState = (state: AppStateType) =>
   getAppointmentState(state).ngSchedulesLoading;
 
@@ -79,8 +56,6 @@ export const getAvailableDatesState = (state: AppStateType) => {
     return formattedObject;
   }
 };
-// export const getAvailableDatesLoadingState = (state: AppStateType) =>
-//   getAppointmentState(state).availableDatesLoading;
 
 export const getSaveNGAppointmentLoadingState = (state: AppStateType) =>
   getAppointmentState(state).saveNGAppointmentLoading;

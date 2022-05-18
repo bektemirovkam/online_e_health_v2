@@ -6,26 +6,19 @@ import {
 import { ThunkAction } from "redux-thunk";
 
 import { userApi } from "../../services/userApi";
-import { hospitalApi, newHospitalApi } from "../../services/hospitalApi";
+import { newHospitalApi } from "../../services/hospitalApi";
 import { AppActionsType } from "./app";
 import { ActionsCreatorsTypes } from "../../models/App";
 import { AppStateType } from "../store";
 import { UserDataType } from "../../models/User";
 import {
   BranchType,
-  ProfilesType,
-  ScheduleType,
   GetDoctorsItemType,
   SpecialitiesType,
 } from "../../models/Hospital";
 import {
-  AppointmentDataHistoryType,
   AppointmentInfoType,
-  HouseCallDataHistoryType,
-  HouseCallInfoType,
   NGAppointmentDataHistoryType,
-  SaveAppointmentResponseType,
-  SaveDoctorCallResponseType,
 } from "../../models/Appointment";
 import { newAppApi } from "../../services/appApi";
 import { formatDateFromString, getNowDate } from "../../utils/formatDate";
@@ -41,48 +34,10 @@ export const appointmentActions = {
       type: "SET_APPOINTMENT_LOADING_USER_DATA",
       payload,
     } as const),
-  setAppointmentLoadingSchedule: (payload: boolean) =>
-    ({
-      type: "SET_APPOINTMENT_LOADING_SCHEDULE",
-      payload,
-    } as const),
-  setAppointmentLoadingProfileSpecs: (payload: boolean) =>
-    ({
-      type: "SET_APPOINTMENT_LOADING_PROFILE_SPECS",
-      payload,
-    } as const),
+
   setAppointmentError: (payload: string | null) =>
     ({
       type: "SET_APPOINTMENT_ERROR",
-      payload,
-    } as const),
-  setAppointmentSchedule: (payload: ScheduleType | null) =>
-    ({
-      type: "SET_APPOINTMENT_SCHEDULE",
-      payload,
-    } as const),
-  setAppointmentProfileSpecs: (payload: ProfilesType[] | null) =>
-    ({
-      type: "SET_APPOINTMENT_PROFILE_SPECS",
-      payload,
-    } as const),
-  setHouseCallResult: (
-    payload: HouseCallDataHistoryType | SaveDoctorCallResponseType | null
-  ) =>
-    ({
-      type: "SET_HOUSE_CALL_RESULT",
-      payload,
-    } as const),
-  setAppointmentSaveResult: (
-    payload: AppointmentDataHistoryType | SaveAppointmentResponseType | null
-  ) =>
-    ({
-      type: "SET_SAVE_APPOINTMENT_RESULT",
-      payload,
-    } as const),
-  setAppointmentSaveLoading: (payload: boolean) =>
-    ({
-      type: "SET_SAVE_APPOINTMENT_LOADING",
       payload,
     } as const),
 
@@ -141,65 +96,6 @@ export const appointmentActions = {
     } as const),
 };
 
-// для записи к участковому врачу
-export const getFamilyAppointmentUserData =
-  (iin: string): ThunkAcionType =>
-  async (dispatch) => {
-    try {
-      dispatch(appointmentActions.setAppointmentError(null));
-      dispatch(appointmentActions.setAppointmentLoadingUserData(true));
-      const userData = await userApi.GetPatientByIIN(iin);
-
-      if (userData.ErrorCode !== 0) {
-        dispatch(appointmentActions.setAppointmentError(userData.ErrorDesc));
-      } else if (userData.RegAvailable !== 1) {
-        dispatch(
-          appointmentActions.setAppointmentError(
-            "Запись в мед.организацию прикрепления пациента недоступна"
-          )
-        );
-      } else {
-        dispatch(appointmentActions.setAppointmentUserData(userData));
-      }
-    } catch (error) {
-      dispatch(
-        appointmentActions.setAppointmentError(
-          "Ошибка при получении данных о пользователе!"
-        )
-      );
-    } finally {
-      dispatch(appointmentActions.setAppointmentLoadingUserData(false));
-    }
-  };
-// для вызова врача на дом
-export const getHouseCallUserData =
-  (iin: string): ThunkAcionType =>
-  async (dispatch) => {
-    try {
-      dispatch(appointmentActions.setAppointmentError(null));
-      dispatch(appointmentActions.setAppointmentLoadingUserData(true));
-      const userData = await userApi.GetPatientByIIN(iin);
-      if (userData.HomeCallAvailable !== 1) {
-        dispatch(
-          appointmentActions.setAppointmentError(
-            "Вызов участкового врача на дом недоступен!"
-          )
-        );
-      } else if (userData.ErrorCode === 140) {
-        dispatch(appointmentActions.setAppointmentError(userData.ErrorDesc));
-      } else {
-        dispatch(appointmentActions.setAppointmentUserData(userData));
-      }
-    } catch (error) {
-      dispatch(
-        appointmentActions.setAppointmentError(
-          "Ошибка при получении данных о пользователе!"
-        )
-      );
-    } finally {
-      dispatch(appointmentActions.setAppointmentLoadingUserData(false));
-    }
-  };
 // для записи на платный прием и запись к узким специалистам
 export const getAppointmentUserData =
   (iin: string): ThunkAcionType =>
@@ -226,220 +122,6 @@ export const getAppointmentUserData =
       );
     } finally {
       dispatch(appointmentActions.setAppointmentLoadingUserData(false));
-    }
-  };
-
-export const getSchedule =
-  (
-    orgId: string,
-    IIN: string,
-    doctorId?: string,
-    profileId?: string
-  ): ThunkAcionType =>
-  async (dispatch) => {
-    try {
-      dispatch(appointmentActions.setAppointmentLoadingSchedule(true));
-      const schedule = await hospitalApi.GetSchedule(
-        orgId,
-        IIN,
-        doctorId,
-        profileId
-      );
-
-      if (schedule.ErrorCode !== 0) {
-        dispatch(appointmentActions.setAppointmentError(schedule.ErrorDesc));
-      } else {
-        const dates = schedule?.Dates?.reduce((prev, date) => {
-          return {
-            ...prev, // форматируем для селекта выбора даты
-            [date.DateView.split(" ")[0].split(".").reverse().join("-")]: {
-              // { '2021-07-11' : { CabinetID: 1234 }, '2021-08-11' : { CabinetID: 54321 } }
-              CabinetID: date.CabinetID,
-            },
-          };
-        }, {});
-
-        const times = schedule?.Dates?.reduce((prev, date) => {
-          // { '2021-07-11' : [{TimeStart: 15:00, TimeEnd: 15:15}, {TimeStart: 15:15, TimeEnd: 15:30}] }
-          return {
-            ...prev, // форматируем для селекта выбора даты
-            [date.DateView.split(" ")[0].split(".").reverse().join("-")]:
-              date.Times,
-          };
-        }, {});
-
-        const formattedSchedule: ScheduleType = {
-          ...schedule,
-          Dates: dates,
-          Times: times,
-        };
-
-        dispatch(appointmentActions.setAppointmentSchedule(formattedSchedule));
-      }
-    } catch (error) {
-      dispatch(
-        appointmentActions.setAppointmentError(
-          "Ошибка сети! Не удалось получить данные о расписании!"
-        )
-      );
-      dispatch(
-        appointmentActions.setAppointmentSaveResult({
-          ErrorCode: 2,
-          ErrorDesc: "Ошибка сети! Не удалось получить данные о расписании!",
-        })
-      );
-    } finally {
-      dispatch(appointmentActions.setAppointmentLoadingSchedule(false));
-    }
-  };
-
-export const getProfileSpecsData =
-  (orgId: string): ThunkAcionType =>
-  async (dispatch) => {
-    try {
-      dispatch(appointmentActions.setAppointmentLoadingProfileSpecs(true));
-      const profileSpecs = await hospitalApi.GetProfileSpecsData(orgId);
-
-      if (profileSpecs.ErrorCode !== 0) {
-        dispatch(
-          appointmentActions.setAppointmentError(profileSpecs.ErrorDesc)
-        );
-      } else {
-        dispatch(
-          appointmentActions.setAppointmentProfileSpecs(profileSpecs.Profiles)
-        );
-      }
-    } catch (error) {
-      dispatch(
-        appointmentActions.setAppointmentError(
-          "Ошибка сети! Не удалось получить данные о специалистах!"
-        )
-      );
-      dispatch(
-        appointmentActions.setAppointmentSaveResult({
-          ErrorCode: 2,
-          ErrorDesc: "Ошибка сети! Не удалось получить данные о специалистах!",
-        })
-      );
-    } finally {
-      dispatch(appointmentActions.setAppointmentLoadingProfileSpecs(false));
-    }
-  };
-
-export const saveAppointment =
-  (
-    info: AppointmentInfoType,
-    iin: string,
-    orgId: string,
-    doctorId: string,
-    date: string,
-    timeStart: string,
-    timeEnd: string,
-    reason: string,
-    cabinetId: string,
-    language?: number,
-    recordingMethod?: number
-  ): ThunkAcionType =>
-  async (dispatch) => {
-    try {
-      dispatch(appointmentActions.setAppointmentSaveLoading(true));
-
-      const respData = await hospitalApi.SaveAppointment(
-        iin,
-        orgId,
-        doctorId,
-        date,
-        timeStart,
-        timeEnd,
-        recordingMethod,
-        cabinetId,
-        reason,
-        language
-      );
-
-      if (respData.ErrorCode !== 0) {
-        dispatch(appointmentActions.setAppointmentError(respData.ErrorDesc));
-        dispatch(appointmentActions.setAppointmentSaveResult(respData));
-      } else {
-        const newAppointmentResult = {
-          ...respData,
-          ...info,
-          iin,
-          dateCancel: null,
-        };
-
-        dispatch(
-          appointmentActions.setAppointmentSaveResult(newAppointmentResult)
-        );
-      }
-    } catch (error) {
-      dispatch(
-        appointmentActions.setAppointmentError(
-          "Ошибка сети! Не удалось сохранить запись на прием!"
-        )
-      );
-      dispatch(
-        appointmentActions.setAppointmentSaveResult({
-          ErrorCode: 2,
-          ErrorDesc: "Ошибка сети! Не удалось сохранить запись на прием!",
-        })
-      );
-    } finally {
-      dispatch(appointmentActions.setAppointmentSaveLoading(false));
-    }
-  };
-
-export const saveHouseCall =
-  (
-    info: HouseCallInfoType,
-    iin: string,
-    orgId: string,
-    phoneNumber: string,
-    reason: string,
-    recordingMethod?: number,
-    language?: number
-  ): ThunkAcionType =>
-  async (dispatch) => {
-    try {
-      dispatch(appointmentActions.setAppointmentSaveLoading(true));
-
-      const respData = await hospitalApi.SaveDoctorCall(
-        iin,
-        orgId,
-        phoneNumber,
-        reason,
-        recordingMethod,
-        language
-      );
-
-      if (respData.ErrorCode !== 0) {
-        dispatch(appointmentActions.setAppointmentError(respData.ErrorDesc));
-        dispatch(appointmentActions.setHouseCallResult(respData));
-      } else {
-        const newHouseCallData = {
-          ...respData,
-          ...info,
-          iin,
-          dateCancel: null,
-        };
-
-        dispatch(appointmentActions.setHouseCallResult(newHouseCallData));
-      }
-    } catch (error) {
-      dispatch(
-        appointmentActions.setAppointmentError(
-          "Ошибка сети! Не удалось сохранить заявку на вызов врача на дом!"
-        )
-      );
-      dispatch(
-        appointmentActions.setHouseCallResult({
-          ErrorCode: 2,
-          ErrorDesc:
-            "Ошибка сети! Не удалось сохранить заявку на вызов врача на дом!",
-        })
-      );
-    } finally {
-      dispatch(appointmentActions.setAppointmentSaveLoading(false));
     }
   };
 

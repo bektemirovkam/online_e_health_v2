@@ -8,20 +8,20 @@ import styles from "./Header.module.css";
 
 const { useBreakpoint } = Grid;
 
-const links = [
-  {
-    to: "/appointment",
-    title: "Запись на прием",
-  },
-  {
-    to: "/house-call",
-    title: "Вызов врача на дом",
-  },
-  {
-    to: "/sicklist",
-    title: "Проверка больничного листа",
-  },
-];
+// const links = [
+//   {
+//     to: "/appointment",
+//     title: "Запись на прием",
+//   },
+//   {
+//     to: "/house-call",
+//     title: "Вызов врача на дом",
+//   },
+//   {
+//     to: "/sicklist",
+//     title: "Проверка больничного листа",
+//   },
+// ];
 
 const HeaderLink: FC<HeaderLinkProps> = ({ to, title, ...props }) => {
   let resolved = useResolvedPath(to);
@@ -49,13 +49,13 @@ const Header: FC<HeaderProps> = (props) => {
     <Row {...props} className={styles.header}>
       <Col span={24}>
         <Row justify="space-between">
-          <Col>
+          {/* <Col>
             <Row className={styles.buttons} justify="space-between">
               {links.map((link) => {
                 return <HeaderLink {...link} key={link.to} />;
               })}
             </Row>
-          </Col>
+          </Col> */}
           <Col flex={1}>
             <Row
               className={cn(styles.buttons, styles.buttons__langs)}

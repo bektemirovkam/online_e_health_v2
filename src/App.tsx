@@ -34,8 +34,8 @@ function App() {
         // <Row justify="center">
         <Routes>
           <Route path="/appointment" element={<AppointmentPage />} />
-          <Route path="/house-call" element={<HouseCallPage />} />
-          <Route path="/sicklist" element={<SickListPage />} />
+          {/* <Route path="/house-call" element={<HouseCallPage />} /> */}
+          {/* <Route path="/sicklist" element={<SickListPage />} /> */}
           <Route path="*" element={<Navigate to="/appointment" />} />
         </Routes>
       ) : (
