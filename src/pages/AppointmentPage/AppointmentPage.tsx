@@ -1,9 +1,14 @@
-import { Row } from "antd";
+import { Grid, Row } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { FirstForm, SecondForm, Stepper } from "../../components";
-import SelectDateForm from "../../components/SelectDateForm/SelectDateForm";
+import {
+  FirstForm,
+  SecondForm,
+  Stepper,
+  SelectDateForm,
+  SelectScheduleForm,
+} from "../../components";
 import {
   RecordAttachmentType,
   RecordMetodsType,
@@ -29,10 +34,12 @@ import { getHospitalsErrorState } from "../../store/selectors/hospitals";
 
 const steps = [
   { title: "Заполните форму" },
-  { title: "Информация" },
-  { title: "Выберите врача" },
+  { title: "Подтвердите информацию" },
+  { title: "Выберите способ записи" },
   { title: "Выберите время приема" },
 ];
+
+const { useBreakpoint } = Grid;
 
 const AppointmentPage = () => {
   const [step, setStep] = useState(0);
@@ -49,7 +56,6 @@ const AppointmentPage = () => {
   const [ngScheduleData, setNgScheduleData] =
     React.useState<AvailableScheduleItem | null>(null);
 
-  const [method, setMethod] = React.useState<RecordMetodsType | null>(null);
   const [ngSpeciality, setNGSpeciality] =
     React.useState<SpecialitiesType | null>(null);
   const [ngDoctor, setNGDoctor] = React.useState<GetDoctorsItemType | null>(
@@ -57,6 +63,8 @@ const AppointmentPage = () => {
   );
 
   const [searchParams] = useSearchParams();
+
+  const { md, xl } = useBreakpoint();
 
   useEffect(() => {
     const orgId = searchParams.get("OrgID");
@@ -93,7 +101,6 @@ const AppointmentPage = () => {
       dispatch(appointmentActions.setAppointmentError(null));
     }
     setStep(0);
-    dispatch(appointmentActions.setAppointmentUserData(null));
   };
 
   const submitSecondForm = () => {
@@ -117,26 +124,38 @@ const AppointmentPage = () => {
           ScheduleVariantsEnum.DISTRICT,
         ])
       );
+      setStep(3);
     } else {
       //TODO: запись к узким
+      setStep(2);
     }
   };
 
   const handleOtherHospitals = () => {
-    //TODO: вывод ошибки раньше
     const error = appointmentUserData?.OrgErrors?.find(
       (item) => item.OrgID === hospitalId
     );
 
     if (error) {
       dispatch(appointmentActions.setAppointmentError(error.ErrorText));
+    } else {
+      setStep(2);
     }
-
-    //TODO: запись к платным
   };
 
   /***************************/
+  // Обработка 3 формы
+  const submitSelectScheduleForm = () => {};
 
+  const backFromSelectScheduleForm = () => {
+    if (appointmentError) {
+      dispatch(appointmentActions.setAppointmentError(null));
+    }
+    setNGSpeciality(null);
+    setNGDoctor(null);
+    setStep(1);
+  };
+  /***************************/
   const renderContent = () => {
     switch (step) {
       case 0:
@@ -165,6 +184,20 @@ const AppointmentPage = () => {
           />
         );
 
+      case 2:
+        return (
+          <SelectScheduleForm
+            hospitalId={hospitalId}
+            submitForm={submitSelectScheduleForm}
+            clearError={backFromSelectScheduleForm}
+            goBack={backFromSelectScheduleForm}
+            selectedDoctor={ngDoctor}
+            setDoctor={setNGDoctor}
+            selectedSpeciality={ngSpeciality}
+            setSpecialities={setNGSpeciality}
+          />
+        );
+
       case 3:
         return <SelectDateForm />;
 
@@ -175,14 +208,17 @@ const AppointmentPage = () => {
 
   return (
     <>
-      <Stepper
-        steps={steps}
-        current={step}
-        status={
-          hospitalError ? "error" : appointmentError ? "error" : "process"
-        }
-      />
-      <Row justify="center" className="h100">
+      {md && (
+        <Stepper
+          steps={steps}
+          current={step}
+          status={
+            hospitalError ? "error" : appointmentError ? "error" : "process"
+          }
+          size={xl ? "default" : "small"}
+        />
+      )}
+      <Row justify="center" className="h100" align="middle">
         {renderContent()}
       </Row>
     </>

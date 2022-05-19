@@ -1,0 +1,16 @@
+.title {
+    font-size: 20px;
+}
+.footer {
+    margin-top: 20px;
+}
+.recorType {
+    margin-top: 20px;
+}
+.recordTypeTitle {
+    color: rgba(0,0,0,.85);
+    overflow-wrap: break-word;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 20px;
+}

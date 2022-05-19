@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { Button, Col, Modal, Row, Typography, Segmented } from "antd";
+import { Button, Col, Modal, Row, Typography, Segmented, Grid } from "antd";
 
 import { SecondFormProps } from "./SecondForm.props";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +17,7 @@ import { SegmentedValue } from "antd/lib/segmented";
 import { RecordAttachmentType } from "../../models/Appointment";
 
 const { Text } = Typography;
+const { useBreakpoint } = Grid;
 
 export const SecondForm: FC<SecondFormProps> = ({
   goBack,
@@ -33,6 +34,9 @@ export const SecondForm: FC<SecondFormProps> = ({
   const appointmentError = useSelector(getAppointmentErrorMessageState);
 
   const dispatch = useDispatch();
+  const { sm, md, lg, xl } = useBreakpoint();
+
+  console.log("sm, md, lg, xl- ---> ", sm, md, lg, xl);
 
   useEffect(() => {
     if (appointmentError) {
@@ -74,6 +78,16 @@ export const SecondForm: FC<SecondFormProps> = ({
     }
   }, [recordType, appointmentUserData, dispatch, hospitalId]);
 
+  useEffect(() => {
+    const error = appointmentUserData?.OrgErrors?.find(
+      (item) => item.OrgID === hospitalId
+    );
+
+    if (error) {
+      dispatch(appointmentActions.setAppointmentError(error.ErrorText));
+    }
+  }, [appointmentUserData?.OrgErrors, dispatch, hospitalId]);
+
   const handleChangeRecordType = (type: SegmentedValue) => {
     setRecordType(type as RecordAttachmentType);
   };
@@ -109,7 +123,7 @@ export const SecondForm: FC<SecondFormProps> = ({
               ]}
               onChange={handleChangeRecordType}
               value={recordType}
-              size="large"
+              size={sm ? "large" : "middle"}
             />
           </Row>
         </>
