@@ -34,9 +34,7 @@ export const SecondForm: FC<SecondFormProps> = ({
   const appointmentError = useSelector(getAppointmentErrorMessageState);
 
   const dispatch = useDispatch();
-  const { sm, md, lg, xl } = useBreakpoint();
-
-  console.log("sm, md, lg, xl- ---> ", sm, md, lg, xl);
+  const { sm } = useBreakpoint();
 
   useEffect(() => {
     if (appointmentError) {
@@ -67,7 +65,7 @@ export const SecondForm: FC<SecondFormProps> = ({
   useEffect(() => {
     if (
       hospitalId === "0" &&
-      recordType === "Запись к узким специалистам" &&
+      recordType === "К узким специалистам" &&
       !appointmentUserData?.RegToProfileSpecs
     ) {
       dispatch(
@@ -117,10 +115,7 @@ export const SecondForm: FC<SecondFormProps> = ({
           </Row>
           <Row justify="center" className={styles.recorType}>
             <Segmented
-              options={[
-                "Запись к участковому врачу",
-                "Запись к узким специалистам",
-              ]}
+              options={["К участковому врачу", "К узким специалистам"]}
               onChange={handleChangeRecordType}
               value={recordType}
               size={sm ? "large" : "middle"}

@@ -11,6 +11,7 @@ import {
 import React, { FC, useEffect, useState } from "react";
 import { SegmentedValue } from "antd/lib/segmented";
 import { useDispatch, useSelector } from "react-redux";
+import cn from "classnames";
 
 import { SelectScheduleFormProps } from "./SelectScheduleForm.props";
 import styles from "./SelectScheduleForm.module.css";
@@ -23,7 +24,8 @@ import {
   getSpecialitiesLoadingState,
   getAppointmentErrorMessageState,
 } from "../../store/selectors/appointment";
-import { Preloader } from "../Preloader/Preloader";
+import { DoctorSelect } from "../DoctorSelect/DoctorSelect";
+import { SpecialitySelect } from "../SpecialitySelect/SpecialitySelect";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -39,9 +41,7 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
   selectedSpeciality,
   setSpecialities,
 }) => {
-  const [recordType, setRecordType] = useState<RecordMethodType>(
-    "Выбрать врача по ФИО"
-  );
+  const [recordType, setRecordType] = useState<RecordMethodType>("По ФИО");
 
   const doctors = useSelector(getDoctorsState);
   const doctorsLoading = useSelector(getDoctorsLoadingState);
@@ -67,10 +67,10 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
   }, [setSpecialities, specialities]);
 
   useEffect(() => {
-    if (recordType === "Выбрать врача по ФИО") {
+    if (recordType === "По ФИО") {
       // dispatch(getDoctors(hospitalId, null));
       // dispatch(getDoctors("867", null));
-    } else if (recordType === "Выбрать по специализации") {
+    } else if (recordType === "По специализации") {
       // dispatch(getSpecialities(hospitalId, null));
       // dispatch(getSpecialities("867", null));
     }
@@ -97,89 +97,55 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
     }
   };
 
-  //TODO: Segment component adaptive
+  const handleChangeSpeciality = (specialityId: string) => {
+    const selectedSpeciality = specialities?.find(
+      (spec) => spec.doc_speciality_id === specialityId
+    );
+    if (selectedSpeciality) {
+      console.log(selectedSpeciality);
+    }
+  };
 
   return (
-    <Col className="form">
-      <>
+    <>
+      <Col className={cn("form", styles.form)}>
         <Row justify="center">
-          <Text className={styles.recordTypeTitle}>Способ выбора врача</Text>
-        </Row>
-        <Row justify="center" className={styles.recorType}>
-          <Segmented
-            options={["Выбрать врача по ФИО", "Выбрать по специализации"]}
-            onChange={handleChangeRecordMethod}
-            value={recordType}
-            disabled={doctorsLoading || specialitiesLoading}
-            size={sm ? "large" : "middle"}
-          />
-        </Row>
-      </>
-      {recordType === "Выбрать врача по ФИО" ? (
-        <Row justify="center">
-          <Col sm={20} className="input_wrapper">
-            <Row justify="center">
-              <Text className={styles.recordTypeTitle}>Выберите врача</Text>
-            </Row>
-            {doctorsLoading ? (
-              <Preloader />
-            ) : (
-              <Select
-                size="large"
-                className="select"
-                onChange={handleChangeDoctor}
-                value={selectedDoctor?.doctor_id}
-                placeholder="Выберите врача"
-              >
-                {doctors.map((doc) => (
-                  <Option key={doc.doctor_id} value={doc.doctor_id}>
-                    {doc.full_name}
-                  </Option>
-                ))}
-              </Select>
-            )}
+          <Col className="input_wrapper">
+            <Text className="subtitle">Способ выбора врача</Text>
+            <Segmented
+              options={["По ФИО", "По специализации"]}
+              onChange={handleChangeRecordMethod}
+              value={recordType}
+              disabled={doctorsLoading || specialitiesLoading}
+              size={sm ? "large" : "middle"}
+              block
+            />
           </Col>
+          {recordType === "По ФИО" ? (
+            <DoctorSelect
+              selectedDoctorId={selectedDoctor?.doctor_id}
+              onChange={handleChangeDoctor}
+              doctors={doctors}
+              isLoading={doctorsLoading}
+            />
+          ) : (
+            <SpecialitySelect
+              isLoading={specialitiesLoading}
+              specialities={specialities}
+              onChange={handleChangeSpeciality}
+              selectedSpecialityId={selectedSpeciality?.doc_speciality_id}
+            />
+          )}
         </Row>
-      ) : (
-        <Row justify="center">
-          <Col sm={20} className="input_wrapper">
-            <Row justify="center">
-              <Text className={styles.recordTypeTitle}>
-                Выберите специализацию
-              </Text>
-            </Row>
-            {specialities &&
-              (specialitiesLoading ? (
-                <Preloader />
-              ) : (
-                <Select
-                  size="large"
-                  className="select"
-                  onChange={handleChangeDoctor}
-                  value={selectedSpeciality?.doc_speciality_id}
-                  placeholder="Выберите специализацию"
-                >
-                  {specialities.map((spec) => (
-                    <Option
-                      key={spec.doc_speciality_id}
-                      value={spec.doc_speciality_id}
-                    >
-                      {spec.doc_speciality}
-                    </Option>
-                  ))}
-                </Select>
-              ))}
-          </Col>
+        <Row justify="space-between" className={styles.footer}>
+          <Button size="large" type="default" onClick={goBack}>
+            Назад
+          </Button>
+          <Button type="primary" size="large" onClick={submitForm}>
+            Продолжить
+          </Button>
         </Row>
-      )}
-      <Row justify="space-between" className={styles.footer}>
-        <Button size="large" type="default" onClick={goBack}>
-          Назад
-        </Button>
-        <Button type="primary" size="large" onClick={submitForm}>
-          Продолжить
-        </Button>
-      </Row>
-    </Col>
+      </Col>
+    </>
   );
 };

@@ -12,12 +12,10 @@ export type AppointmentInfoType = {
 };
 
 export type RecordAttachmentType =
-  | "Запись к участковому врачу"
-  | "Запись к узким специалистам";
+  | "К участковому врачу"
+  | "К узким специалистам";
 
-export type RecordMethodType =
-  | "Выбрать врача по ФИО"
-  | "Выбрать по специализации";
+export type RecordMethodType = "По ФИО" | "По специализации";
 
 export type RecordMetodsType = "specialization" | "FIO";
 

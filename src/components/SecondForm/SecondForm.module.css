@@ -1,5 +1,6 @@
 .title {
     font-size: 20px;
+    font-weight: 400;
 }
 .footer {
     margin-top: 20px;
@@ -11,6 +12,5 @@
     color: rgba(0,0,0,.85);
     overflow-wrap: break-word;
     font-size: 20px;
-    font-weight: 700;
     margin-top: 20px;
 }

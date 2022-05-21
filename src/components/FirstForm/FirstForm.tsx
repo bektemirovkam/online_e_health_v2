@@ -78,9 +78,9 @@ export const FirstForm: FC<FirstFormProps> = ({
   }, [hospitalError, appointmentError, clearError]);
 
   return (
-    <Row justify="center">
-      <Col>
-        {hospitalWarning && (
+    <>
+      {hospitalWarning && (
+        <Col>
           <Row justify="center">
             <Col sm={16}>
               <Alert
@@ -91,8 +91,8 @@ export const FirstForm: FC<FirstFormProps> = ({
               />
             </Col>
           </Row>
-        )}
-      </Col>
+        </Col>
+      )}
       <Col className="form">
         <Row justify="center">
           <Title className="title">Запись на приём online</Title>
@@ -104,7 +104,6 @@ export const FirstForm: FC<FirstFormProps> = ({
               defaultValue={"0"}
               size="large"
               className="select"
-              //@ts-ignore
               onChange={handleChangeHospital}
               value={hospitalId}
             >
@@ -148,6 +147,6 @@ export const FirstForm: FC<FirstFormProps> = ({
           </Button>
         </Row>
       </Col>
-    </Row>
+    </>
   );
 };

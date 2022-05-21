@@ -1,3 +1,6 @@
+.form {
+    max-width: 540px;
+}
 .title {
     font-size: 20px;
 }
@@ -10,7 +13,7 @@
 .recordTypeTitle {
     color: rgba(0,0,0,.85);
     overflow-wrap: break-word;
-    font-size: 20px;
-    font-weight: 700;
-    margin-top: 20px;
+    font-size: 18px;
+    margin: 20px 0 10px 0;
+    display: inline-block;
 }

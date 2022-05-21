@@ -48,7 +48,7 @@ const AppointmentPage = () => {
   const [captchaResp, setCaptchaResp] = useState<string | null>(null);
 
   const [recordType, setRecordType] = useState<RecordAttachmentType>(
-    "Запись к участковому врачу"
+    "К участковому врачу"
   );
 
   const [ngDate, setNgDate] = React.useState<string | null>(null);
@@ -113,7 +113,7 @@ const AppointmentPage = () => {
 
   const handleAttachmentPolyclinic = () => {
     if (
-      recordType === "Запись к участковому врачу" &&
+      recordType === "К участковому врачу" &&
       appointmentUserData?.AttachmentID &&
       appointmentUserData?.DoctorID
     ) {
