@@ -12,6 +12,7 @@ export const DoctorSelect: FC<DoctorSelectProps> = ({
   doctors,
   selectedDoctorId,
   onChange,
+  size = "large",
 }) => {
   return (
     <Col className="input_wrapper">
@@ -20,17 +21,18 @@ export const DoctorSelect: FC<DoctorSelectProps> = ({
         <Preloader />
       ) : (
         <Select
-          size="large"
+          size={size}
           className="select"
           onChange={onChange}
           value={selectedDoctorId}
           placeholder="Выберите врача"
         >
-          {doctors.map((doc) => (
-            <Option key={doc.doctor_id} value={doc.doctor_id}>
-              {doc.full_name}
-            </Option>
-          ))}
+          {doctors &&
+            doctors.map((doc) => (
+              <Option key={doc.doctor_id} value={doc.doctor_id}>
+                {doc.full_name}
+              </Option>
+            ))}
         </Select>
       )}
     </Col>

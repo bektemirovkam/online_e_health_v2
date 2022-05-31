@@ -1,3 +1,4 @@
+import { RecordMethodType } from "../../models/Appointment";
 import { GetDoctorsItemType, SpecialitiesType } from "../../models/Hospital";
 
 export interface SelectScheduleFormProps {
@@ -6,7 +7,9 @@ export interface SelectScheduleFormProps {
   goBack: () => void;
   clearError: () => void;
   selectedDoctor: GetDoctorsItemType | null;
-  setDoctor: (doctor: GetDoctorsItemType) => void;
+  setDoctor: (doctor: GetDoctorsItemType | null) => void;
   selectedSpeciality: SpecialitiesType | null;
-  setSpecialities: (doctor: SpecialitiesType) => void;
+  setSpecialities: (speciality: SpecialitiesType | null) => void;
+  recordType: RecordMethodType;
+  setRecordType: (recordType: RecordMethodType) => void;
 }

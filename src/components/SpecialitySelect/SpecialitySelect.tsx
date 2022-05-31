@@ -12,6 +12,7 @@ export const SpecialitySelect: FC<SpecialitySelectProps> = ({
   onChange,
   selectedSpecialityId,
   specialities,
+  size = "large",
 }) => {
   return (
     <Col className="input_wrapper">
@@ -20,7 +21,7 @@ export const SpecialitySelect: FC<SpecialitySelectProps> = ({
         <Preloader />
       ) : (
         <Select
-          size="large"
+          size={size}
           className="select"
           onChange={onChange}
           value={selectedSpecialityId}

@@ -1,5 +1,15 @@
 .form {
-    max-width: 540px;
+    width: 540px;
+}
+@media (max-width: 560px) {
+    .form {
+        width: 400px;
+    }
+}
+@media (max-width: 420px) {
+    .form {
+        width: 300px;
+    }
 }
 .title {
     font-size: 20px;

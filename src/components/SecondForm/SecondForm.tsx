@@ -24,8 +24,8 @@ export const SecondForm: FC<SecondFormProps> = ({
   submitForm,
   clearError,
   hospitalId,
-  recordType,
-  setRecordType,
+  attachmentRecordType,
+  setAttachmentRecordType,
 }) => {
   const appointmentUserData = useSelector(getAppointmentUserDataState);
   const appointmentUserDataLoading = useSelector(
@@ -35,16 +35,6 @@ export const SecondForm: FC<SecondFormProps> = ({
 
   const dispatch = useDispatch();
   const { sm } = useBreakpoint();
-
-  useEffect(() => {
-    if (appointmentError) {
-      Modal.error({
-        title: "Ошибка",
-        content: appointmentError,
-        onOk: clearError,
-      });
-    }
-  }, [appointmentError, clearError]);
 
   useEffect(() => {
     if (appointmentUserData && hospitalId === "0") {
@@ -65,7 +55,7 @@ export const SecondForm: FC<SecondFormProps> = ({
   useEffect(() => {
     if (
       hospitalId === "0" &&
-      recordType === "К узким специалистам" &&
+      attachmentRecordType === "К узким специалистам" &&
       !appointmentUserData?.RegToProfileSpecs
     ) {
       dispatch(
@@ -74,7 +64,7 @@ export const SecondForm: FC<SecondFormProps> = ({
         )
       );
     }
-  }, [recordType, appointmentUserData, dispatch, hospitalId]);
+  }, [attachmentRecordType, appointmentUserData, dispatch, hospitalId]);
 
   useEffect(() => {
     const error = appointmentUserData?.OrgErrors?.find(
@@ -87,11 +77,26 @@ export const SecondForm: FC<SecondFormProps> = ({
   }, [appointmentUserData?.OrgErrors, dispatch, hospitalId]);
 
   const handleChangeRecordType = (type: SegmentedValue) => {
-    setRecordType(type as RecordAttachmentType);
+    setAttachmentRecordType(type as RecordAttachmentType);
   };
 
   if (appointmentUserDataLoading) {
     return <Preloader />;
+  }
+
+  if (appointmentError) {
+    return (
+      <Modal
+        title="Ошибка"
+        onCancel={clearError}
+        onOk={clearError}
+        cancelText="Закрыть"
+        visible
+        centered
+      >
+        <p>{appointmentError}</p>
+      </Modal>
+    );
   }
 
   return (
@@ -102,6 +107,7 @@ export const SecondForm: FC<SecondFormProps> = ({
             appointmentUserData={appointmentUserData}
             title={<Text className={styles.title}>Информация о пациенте</Text>}
             column={{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }}
+            size={sm ? "default" : "small"}
             bordered
           />
         )}
@@ -117,17 +123,21 @@ export const SecondForm: FC<SecondFormProps> = ({
             <Segmented
               options={["К участковому врачу", "К узким специалистам"]}
               onChange={handleChangeRecordType}
-              value={recordType}
+              value={attachmentRecordType}
               size={sm ? "large" : "middle"}
             />
           </Row>
         </>
       )}
       <Row justify="space-between" className={styles.footer}>
-        <Button size="large" type="default" onClick={goBack}>
+        <Button type="default" size={sm ? "large" : "middle"} onClick={goBack}>
           Назад
         </Button>
-        <Button type="primary" size="large" onClick={submitForm}>
+        <Button
+          type="primary"
+          size={sm ? "large" : "middle"}
+          onClick={submitForm}
+        >
           Продолжить
         </Button>
       </Row>

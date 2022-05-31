@@ -17,7 +17,7 @@ const initialState = {
   branchesLoading: false,
   specialities: null as SpecialitiesType[] | null,
   specialitiesLoading: false,
-  doctors: [] as GetDoctorsItemType[],
+  doctors: null as GetDoctorsItemType[] | null,
   doctorsLoading: false,
   ngSchedulesLoading: false,
   availableDates: null as GetAvailableDatesResponseType | null,

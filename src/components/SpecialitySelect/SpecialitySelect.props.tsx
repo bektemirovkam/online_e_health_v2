@@ -1,3 +1,4 @@
+import { SizeType } from "antd/lib/config-provider/SizeContext";
 import { SpecialitiesType } from "../../models/Hospital";
 
 export interface SpecialitySelectProps {
@@ -5,4 +6,5 @@ export interface SpecialitySelectProps {
   specialities: SpecialitiesType[] | null;
   selectedSpecialityId?: string;
   onChange: (id: string) => void;
+  size?: SizeType;
 }

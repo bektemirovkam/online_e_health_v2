@@ -5,6 +5,8 @@ export interface SecondFormProps {
   goBack: () => void;
   clearError: () => void;
   hospitalId: string;
-  recordType: RecordAttachmentType;
-  setRecordType: React.Dispatch<React.SetStateAction<RecordAttachmentType>>;
+  attachmentRecordType: RecordAttachmentType;
+  setAttachmentRecordType: React.Dispatch<
+    React.SetStateAction<RecordAttachmentType>
+  >;
 }

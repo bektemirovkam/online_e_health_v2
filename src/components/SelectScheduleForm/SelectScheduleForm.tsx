@@ -1,14 +1,5 @@
-import {
-  Button,
-  Col,
-  Modal,
-  Row,
-  Segmented,
-  Select,
-  Typography,
-  Grid,
-} from "antd";
-import React, { FC, useEffect, useState } from "react";
+import { Button, Col, Modal, Row, Segmented, Typography, Grid } from "antd";
+import React, { FC, useEffect } from "react";
 import { SegmentedValue } from "antd/lib/segmented";
 import { useDispatch, useSelector } from "react-redux";
 import cn from "classnames";
@@ -28,7 +19,6 @@ import { DoctorSelect } from "../DoctorSelect/DoctorSelect";
 import { SpecialitySelect } from "../SpecialitySelect/SpecialitySelect";
 
 const { Text } = Typography;
-const { Option } = Select;
 const { useBreakpoint } = Grid;
 
 export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
@@ -40,9 +30,9 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
   setDoctor,
   selectedSpeciality,
   setSpecialities,
+  recordType,
+  setRecordType,
 }) => {
-  const [recordType, setRecordType] = useState<RecordMethodType>("По ФИО");
-
   const doctors = useSelector(getDoctorsState);
   const doctorsLoading = useSelector(getDoctorsLoadingState);
 
@@ -67,31 +57,23 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
   }, [setSpecialities, specialities]);
 
   useEffect(() => {
-    if (recordType === "По ФИО") {
-      // dispatch(getDoctors(hospitalId, null));
-      // dispatch(getDoctors("867", null));
-    } else if (recordType === "По специализации") {
-      // dispatch(getSpecialities(hospitalId, null));
-      // dispatch(getSpecialities("867", null));
+    if (hospitalId) {
+      if (recordType === "По ФИО" && !doctors) {
+        dispatch(getDoctors(hospitalId));
+        // dispatch(getDoctors("867"));
+      } else if (recordType === "По специализации" && !specialities) {
+        dispatch(getSpecialities(hospitalId));
+        // dispatch(getSpecialities("867"));
+      }
     }
-  }, [dispatch, recordType]);
-
-  useEffect(() => {
-    if (appointmentError) {
-      Modal.error({
-        title: "Ошибка",
-        content: appointmentError,
-        onOk: clearError,
-      });
-    }
-  }, [appointmentError, clearError]);
+  }, [dispatch, recordType, hospitalId, doctors, specialities]);
 
   const handleChangeRecordMethod = (value: SegmentedValue) => {
     setRecordType(value as RecordMethodType);
   };
 
   const handleChangeDoctor = (doctorId: string) => {
-    const selectedDoctor = doctors.find((doc) => doc.doctor_id === doctorId);
+    const selectedDoctor = doctors?.find((doc) => doc.doctor_id === doctorId);
     if (selectedDoctor) {
       setDoctor(selectedDoctor);
     }
@@ -102,9 +84,24 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
       (spec) => spec.doc_speciality_id === specialityId
     );
     if (selectedSpeciality) {
-      console.log(selectedSpeciality);
+      setSpecialities(selectedSpeciality);
     }
   };
+
+  if (appointmentError) {
+    return (
+      <Modal
+        title="Ошибка"
+        onCancel={clearError}
+        onOk={clearError}
+        cancelText="Закрыть"
+        visible
+        centered
+      >
+        <p>{appointmentError}</p>
+      </Modal>
+    );
+  }
 
   return (
     <>
@@ -127,21 +124,34 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
               onChange={handleChangeDoctor}
               doctors={doctors}
               isLoading={doctorsLoading}
+              size={sm ? "large" : "middle"}
             />
           ) : (
             <SpecialitySelect
-              isLoading={specialitiesLoading}
               specialities={specialities}
               onChange={handleChangeSpeciality}
               selectedSpecialityId={selectedSpeciality?.doc_speciality_id}
+              isLoading={specialitiesLoading}
+              size={sm ? "large" : "middle"}
             />
           )}
         </Row>
         <Row justify="space-between" className={styles.footer}>
-          <Button size="large" type="default" onClick={goBack}>
+          <Button
+            type="default"
+            size={sm ? "large" : "middle"}
+            onClick={goBack}
+          >
             Назад
           </Button>
-          <Button type="primary" size="large" onClick={submitForm}>
+          <Button
+            type="primary"
+            size={sm ? "large" : "middle"}
+            onClick={submitForm}
+            disabled={
+              recordType === "По ФИО" ? !selectedDoctor : !selectedSpeciality
+            }
+          >
             Продолжить
           </Button>
         </Row>

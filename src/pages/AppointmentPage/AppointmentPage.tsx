@@ -11,6 +11,7 @@ import {
 } from "../../components";
 import {
   RecordAttachmentType,
+  RecordMethodType,
   RecordMetodsType,
 } from "../../models/Appointment";
 import {
@@ -23,6 +24,7 @@ import {
 import {
   appointmentActions,
   getAppointmentUserData,
+  getDoctors,
   getSchedulesByDoctor,
 } from "../../store/actions/appointment";
 import { hospitalsActions } from "../../store/actions/hospitals";
@@ -47,9 +49,9 @@ const AppointmentPage = () => {
   const [hospitalId, setHospitalId] = useState<string>("0");
   const [captchaResp, setCaptchaResp] = useState<string | null>(null);
 
-  const [recordType, setRecordType] = useState<RecordAttachmentType>(
-    "К участковому врачу"
-  );
+  const [attachmentRecordType, setAttachmentRecordType] =
+    useState<RecordAttachmentType>("К участковому врачу");
+  const [recordType, setRecordType] = useState<RecordMethodType>("По ФИО");
 
   const [ngDate, setNgDate] = React.useState<string | null>(null);
   const [ngTime, setNgTime] = React.useState<AvailableDateType | null>(null);
@@ -72,6 +74,10 @@ const AppointmentPage = () => {
       setHospitalId(orgId);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    document.title = "Запись на прием online";
+  }, []);
 
   const dispatch = useDispatch();
 
@@ -112,22 +118,23 @@ const AppointmentPage = () => {
   };
 
   const handleAttachmentPolyclinic = () => {
-    if (
-      recordType === "К участковому врачу" &&
-      appointmentUserData?.AttachmentID &&
-      appointmentUserData?.DoctorID
-    ) {
-      dispatch(
-        // getSchedulesByDoctor(appointmentUserData.AttachmentID, appointmentUserData.DoctorID, [
-        getSchedulesByDoctor("867", "7a914a5c-30c4-11ec-8b30-00155d0a8602", [
-          ScheduleVariantsEnum.NO_RESTRICTION,
-          ScheduleVariantsEnum.DISTRICT,
-        ])
-      );
-      setStep(3);
-    } else {
-      //TODO: запись к узким
-      setStep(2);
+    const orgId = appointmentUserData?.AttachmentID;
+    const familyDoctorId = appointmentUserData?.DoctorID;
+
+    if (orgId) {
+      if (attachmentRecordType === "К участковому врачу" && familyDoctorId) {
+        dispatch(
+          // getSchedulesByDoctor(orgId, familyDoctorId, [
+          getSchedulesByDoctor("867", "7a914a5c-30c4-11ec-8b30-00155d0a8602", [
+            ScheduleVariantsEnum.NO_RESTRICTION,
+            ScheduleVariantsEnum.DISTRICT,
+          ])
+        );
+        setStep(3);
+      } else {
+        dispatch(getDoctors(orgId));
+        setStep(2);
+      }
     }
   };
 
@@ -139,6 +146,9 @@ const AppointmentPage = () => {
     if (error) {
       dispatch(appointmentActions.setAppointmentError(error.ErrorText));
     } else {
+      dispatch(appointmentActions.setNGDoctors(null));
+      dispatch(appointmentActions.setNGSpecialities(null));
+      dispatch(getDoctors(hospitalId));
       setStep(2);
     }
   };
@@ -151,10 +161,17 @@ const AppointmentPage = () => {
     if (appointmentError) {
       dispatch(appointmentActions.setAppointmentError(null));
     }
+    dispatch(appointmentActions.setNGDoctors(null));
+    dispatch(appointmentActions.setNGSpecialities(null));
     setNGSpeciality(null);
     setNGDoctor(null);
     setStep(1);
   };
+
+  const clearErrorSelectScheduleForm = () => {
+    dispatch(appointmentActions.setAppointmentError(null));
+  };
+
   /***************************/
   const renderContent = () => {
     switch (step) {
@@ -179,8 +196,8 @@ const AppointmentPage = () => {
             submitForm={submitSecondForm}
             clearError={backFromSecondForm}
             hospitalId={hospitalId}
-            recordType={recordType}
-            setRecordType={setRecordType}
+            attachmentRecordType={attachmentRecordType}
+            setAttachmentRecordType={setAttachmentRecordType}
           />
         );
 
@@ -189,12 +206,14 @@ const AppointmentPage = () => {
           <SelectScheduleForm
             hospitalId={hospitalId}
             submitForm={submitSelectScheduleForm}
-            clearError={backFromSelectScheduleForm}
+            clearError={clearErrorSelectScheduleForm}
             goBack={backFromSelectScheduleForm}
             selectedDoctor={ngDoctor}
             setDoctor={setNGDoctor}
             selectedSpeciality={ngSpeciality}
             setSpecialities={setNGSpeciality}
+            recordType={recordType}
+            setRecordType={setRecordType}
           />
         );
 

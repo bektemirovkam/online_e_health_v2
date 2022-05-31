@@ -62,7 +62,7 @@ export const appointmentActions = {
       type: "SET_SPECIALITIES_LOADING",
       payload,
     } as const),
-  setNGDoctors: (payload: GetDoctorsItemType[]) =>
+  setNGDoctors: (payload: GetDoctorsItemType[] | null) =>
     ({
       type: "SET_DOCTORS",
       payload,

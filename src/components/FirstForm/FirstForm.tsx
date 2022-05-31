@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useEffect, useState } from "react";
+import React, { ChangeEvent, FC, useState } from "react";
 import {
   Button,
   Col,
@@ -8,6 +8,7 @@ import {
   Select,
   Typography,
   Alert,
+  Grid,
 } from "antd";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useSelector } from "react-redux";
@@ -21,6 +22,7 @@ import {
 
 const { Title, Text } = Typography;
 const { Option } = Select;
+const { useBreakpoint } = Grid;
 
 const checkIIN = (IIN: string) => {
   const regex = /^(\d{12})$/;
@@ -42,6 +44,8 @@ export const FirstForm: FC<FirstFormProps> = ({
   const appointmentError = useSelector(getAppointmentErrorMessageState);
   const hospitalsForAppointment = useSelector(getHospitalsForAppointmentState);
   const hospitalError = useSelector(getHospitalsErrorState);
+
+  const { sm } = useBreakpoint();
 
   const onChange = (token: string | null) => {
     setCaptchaResp(token);
@@ -67,15 +71,21 @@ export const FirstForm: FC<FirstFormProps> = ({
     setHospitalId(hospitalId);
   };
 
-  useEffect(() => {
-    if (hospitalError || appointmentError) {
-      Modal.error({
-        title: "Ошибка",
-        content: hospitalError || appointmentError,
-        onOk: clearError,
-      });
-    }
-  }, [hospitalError, appointmentError, clearError]);
+  if (appointmentError || hospitalError) {
+    return (
+      <Modal
+        title="Ошибка"
+        onCancel={clearError}
+        onOk={clearError}
+        cancelText="Закрыть"
+        visible
+        centered
+      >
+        {appointmentError && <p>{appointmentError}</p>}
+        {hospitalError && <p>{hospitalError}</p>}
+      </Modal>
+    );
+  }
 
   return (
     <>
@@ -102,7 +112,7 @@ export const FirstForm: FC<FirstFormProps> = ({
             <Text className="subtitle">Выберите организацию</Text>
             <Select
               defaultValue={"0"}
-              size="large"
+              size={sm ? "large" : "middle"}
               className="select"
               onChange={handleChangeHospital}
               value={hospitalId}
@@ -119,7 +129,7 @@ export const FirstForm: FC<FirstFormProps> = ({
             <Text className="subtitle">Введите ИИН</Text>
             <Input
               placeholder="Введите ИИН"
-              size="large"
+              size={sm ? "large" : "middle"}
               className="input"
               maxLength={12}
               onChange={handleChangeIIN}
@@ -136,7 +146,7 @@ export const FirstForm: FC<FirstFormProps> = ({
         <Row justify="center">
           <Button
             type="primary"
-            size="large"
+            size={sm ? "large" : "middle"}
             disabled={
               // !Boolean(captchaResp) ||
               !checkIIN(IIN) || !Boolean(hospitalId)
