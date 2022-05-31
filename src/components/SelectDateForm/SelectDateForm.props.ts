@@ -1,1 +1,4 @@
-export interface SelectDateFormProps {}
+export interface SelectDateFormProps {
+  goBack: () => void;
+  submitForm: () => void;
+}

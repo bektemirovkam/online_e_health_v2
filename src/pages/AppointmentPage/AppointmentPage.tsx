@@ -12,7 +12,6 @@ import {
 import {
   RecordAttachmentType,
   RecordMethodType,
-  RecordMetodsType,
 } from "../../models/Appointment";
 import {
   AvailableDateType,
@@ -23,6 +22,7 @@ import {
 } from "../../models/Hospital";
 import {
   appointmentActions,
+  createNGAppointment,
   getAppointmentUserData,
   getDoctors,
   getNGSchedules,
@@ -153,40 +153,56 @@ const AppointmentPage = () => {
       setStep(2);
     }
   };
-
   /***************************/
+
   // Обработка 3 формы
   const submitSelectScheduleForm = () => {
     const orgId =
       hospitalId === "0" ? appointmentUserData?.AttachmentID : hospitalId;
+    const doctorId = ngDoctor?.doctor_id;
+    const specialityId = ngSpeciality?.doc_speciality_id;
 
     if (orgId) {
-      if (recordType === "По ФИО" && ngDoctor?.doctor_id) {
-        dispatch(
-          // getSchedulesByDoctor(orgId, ngDoctor?.doctor_id, [
-          getSchedulesByDoctor("867", "7a914a5c-30c4-11ec-8b30-00155d0a8602", [
-            ScheduleVariantsEnum.NO_RESTRICTION,
-            hospitalId === "0"
-              ? ScheduleVariantsEnum.PROFILE
-              : ScheduleVariantsEnum.PAID,
-          ])
-        );
-        setStep(3);
-      } else if (
-        recordType === "По специализации" &&
-        ngSpeciality?.doc_speciality_id
-      ) {
-        // dispatch(getNGSchedules(orgId, speciality.doc_speciality_id));
-        dispatch(
-          getNGSchedules("867", ngSpeciality.doc_speciality_id, [
-            ScheduleVariantsEnum.NO_RESTRICTION,
-            hospitalId === "0"
-              ? ScheduleVariantsEnum.PROFILE
-              : ScheduleVariantsEnum.PAID,
-          ])
-        );
+      switch (recordType) {
+        case "По ФИО": {
+          if (doctorId) {
+            dispatch(
+              // getSchedulesByDoctor(orgId, doctorId, [
+              getSchedulesByDoctor(
+                "867",
+                "7a914a5c-30c4-11ec-8b30-00155d0a8602",
+                [
+                  ScheduleVariantsEnum.NO_RESTRICTION,
+                  hospitalId === "0"
+                    ? ScheduleVariantsEnum.PROFILE
+                    : ScheduleVariantsEnum.PAID,
+                ]
+              )
+            );
+            setStep(3);
+          }
+          break;
+        }
+
+        case "По специализации": {
+          if (specialityId) {
+            // dispatch(getNGSchedules(orgId, specialityId));
+            dispatch(
+              getNGSchedules("867", specialityId, [
+                ScheduleVariantsEnum.NO_RESTRICTION,
+                hospitalId === "0"
+                  ? ScheduleVariantsEnum.PROFILE
+                  : ScheduleVariantsEnum.PAID,
+              ])
+            );
+            setStep(3);
+          }
+          break;
+        }
+
+        default:
+          break;
       }
-      setStep(3);
     }
   };
 
@@ -203,6 +219,32 @@ const AppointmentPage = () => {
 
   const clearErrorSelectScheduleForm = () => {
     dispatch(appointmentActions.setAppointmentError(null));
+  };
+
+  /***************************/
+
+  // Обработка выбора даты
+
+  const backFromSelectDate = () => {
+    if (appointmentError) {
+      dispatch(appointmentActions.setAppointmentError(null));
+    }
+    dispatch(appointmentActions.setNGAvailablesDate(null));
+    setNgDate(null);
+    setNGDoctor(null);
+    setNGSpeciality(null);
+    setNgScheduleData(null);
+    setStep(3);
+  };
+
+  const createAppointment = () => {
+    // const appointmentIIN = appointmentUserData ? IIN : myIIN;
+    // const orgId = hospital?.OrgID;
+    // const schedule_id = ngScheduleData?.schedule_id;
+    // const doctorName = ngDoctor?.full_name;
+    // const appointment_date = ngTime?.date_begin;
+    // const room_description = ngScheduleData?.room_description;
+    // const schedule_name = ngScheduleData?.schedule_name;
   };
 
   /***************************/
@@ -251,7 +293,12 @@ const AppointmentPage = () => {
         );
 
       case 3:
-        return <SelectDateForm />;
+        return (
+          <SelectDateForm
+            goBack={backFromSelectDate}
+            submitForm={createAppointment}
+          />
+        );
 
       default:
         return null;
