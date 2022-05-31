@@ -59,11 +59,11 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
   useEffect(() => {
     if (hospitalId) {
       if (recordType === "По ФИО" && !doctors) {
-        dispatch(getDoctors(hospitalId));
-        // dispatch(getDoctors("867"));
+        // dispatch(getDoctors(hospitalId));
+        dispatch(getDoctors("867"));
       } else if (recordType === "По специализации" && !specialities) {
-        dispatch(getSpecialities(hospitalId));
-        // dispatch(getSpecialities("867"));
+        // dispatch(getSpecialities(hospitalId));
+        dispatch(getSpecialities("867"));
       }
     }
   }, [dispatch, recordType, hospitalId, doctors, specialities]);
@@ -108,7 +108,7 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
       <Col className={cn("form", styles.form)}>
         <Row justify="center">
           <Col className="input_wrapper">
-            <Text className="subtitle">Способ выбора врача</Text>
+            <Text className="subtitle">Способ записи</Text>
             <Segmented
               options={["По ФИО", "По специализации"]}
               onChange={handleChangeRecordMethod}

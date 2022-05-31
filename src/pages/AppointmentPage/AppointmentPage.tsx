@@ -25,6 +25,7 @@ import {
   appointmentActions,
   getAppointmentUserData,
   getDoctors,
+  getNGSchedules,
   getSchedulesByDoctor,
 } from "../../store/actions/appointment";
 import { hospitalsActions } from "../../store/actions/hospitals";
@@ -155,7 +156,39 @@ const AppointmentPage = () => {
 
   /***************************/
   // Обработка 3 формы
-  const submitSelectScheduleForm = () => {};
+  const submitSelectScheduleForm = () => {
+    const orgId =
+      hospitalId === "0" ? appointmentUserData?.AttachmentID : hospitalId;
+
+    if (orgId) {
+      if (recordType === "По ФИО" && ngDoctor?.doctor_id) {
+        dispatch(
+          // getSchedulesByDoctor(orgId, ngDoctor?.doctor_id, [
+          getSchedulesByDoctor("867", "7a914a5c-30c4-11ec-8b30-00155d0a8602", [
+            ScheduleVariantsEnum.NO_RESTRICTION,
+            hospitalId === "0"
+              ? ScheduleVariantsEnum.PROFILE
+              : ScheduleVariantsEnum.PAID,
+          ])
+        );
+        setStep(3);
+      } else if (
+        recordType === "По специализации" &&
+        ngSpeciality?.doc_speciality_id
+      ) {
+        // dispatch(getNGSchedules(orgId, speciality.doc_speciality_id));
+        dispatch(
+          getNGSchedules("867", ngSpeciality.doc_speciality_id, [
+            ScheduleVariantsEnum.NO_RESTRICTION,
+            hospitalId === "0"
+              ? ScheduleVariantsEnum.PROFILE
+              : ScheduleVariantsEnum.PAID,
+          ])
+        );
+      }
+      setStep(3);
+    }
+  };
 
   const backFromSelectScheduleForm = () => {
     if (appointmentError) {
