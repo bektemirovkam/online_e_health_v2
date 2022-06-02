@@ -1,3 +1,42 @@
 .wrapper {
-    
+}
+
+.schedule {
+  transition: all 0.2s ease-out;
+  opacity: 0;
+}
+.schedule.visible {
+  opacity: 1;
+}
+.selectDate,
+.selectSchedule {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.footer {
+  transition: all 0.2s ease-out;
+  margin-top: -113px;
+}
+.footer.margin {
+  margin-top: 0;
+}
+
+@media (max-width: 576px) {
+  .footer {
+    margin-top: -87px;
+  }
+}
+
+@media (min-width: 540px) {
+  .selectSchedule {
+    width: 500px;
+  }
+}
+
+@media (min-width: 420px) {
+  .selectDate,
+  .selectSchedule {
+    width: 350px;
+  }
 }

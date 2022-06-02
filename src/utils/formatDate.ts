@@ -1,9 +1,11 @@
 import moment, { Moment } from "moment";
-import "moment/locale/ru";
-moment.locale("ru");
 
 export const defaultFormatDate = (date: Date) => {
   return moment(date).format("L");
+};
+
+export const getMomentFromAvailableDate = (date: string) => {
+  return moment(date);
 };
 
 export const isAfterDate = (date1: Moment | Date, date2: Date) => {
@@ -21,7 +23,10 @@ export const createNewDate = (date: string, time: string) => {
   return moment(`${year}-${month}-${day}T${time}`);
 };
 
-export const formatServerDate = (value: string) => {
+export const formatServerDate = (value?: string) => {
+  if (!value) {
+    return "";
+  }
   // нужно в тех местах где время и дата выводятся отдельно
   return `${value.substring(6, 8)}.${value.substring(4, 6)}.${value.substring(
     0,

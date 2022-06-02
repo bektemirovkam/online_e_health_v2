@@ -1,6 +1,6 @@
-import { Grid, Row } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Grid, Row, Result, Button } from "antd";
 import { useSearchParams } from "react-router-dom";
 import {
   FirstForm,
@@ -8,8 +8,10 @@ import {
   Stepper,
   SelectDateForm,
   SelectScheduleForm,
+  Preloader,
 } from "../../components";
 import {
+  AppointmentInfoType,
   RecordAttachmentType,
   RecordMethodType,
 } from "../../models/Appointment";
@@ -32,8 +34,11 @@ import { hospitalsActions } from "../../store/actions/hospitals";
 import {
   getAppointmentErrorMessageState,
   getAppointmentUserDataState,
+  getSaveNGAppointmentLoadingState,
+  getSaveNGAppointmentResultState,
 } from "../../store/selectors/appointment";
 import { getHospitalsErrorState } from "../../store/selectors/hospitals";
+import { formatDateFromString, formatServerDate } from "../../utils/formatDate";
 
 const steps = [
   { title: "Заполните форму" },
@@ -85,6 +90,9 @@ const AppointmentPage = () => {
   const hospitalError = useSelector(getHospitalsErrorState);
   const appointmentError = useSelector(getAppointmentErrorMessageState);
   const appointmentUserData = useSelector(getAppointmentUserDataState);
+
+  const saveAppointmentResult = useSelector(getSaveNGAppointmentResultState);
+  const saveAppointmentLoading = useSelector(getSaveNGAppointmentLoadingState);
 
   // Обработка 1 формы
   const submitFirstForm = async () => {
@@ -234,17 +242,68 @@ const AppointmentPage = () => {
     setNGDoctor(null);
     setNGSpeciality(null);
     setNgScheduleData(null);
-    setStep(3);
+    if (attachmentRecordType === "К участковому врачу") {
+      setStep(1);
+    } else {
+      setStep(2);
+    }
   };
 
   const createAppointment = () => {
-    // const appointmentIIN = appointmentUserData ? IIN : myIIN;
-    // const orgId = hospital?.OrgID;
-    // const schedule_id = ngScheduleData?.schedule_id;
-    // const doctorName = ngDoctor?.full_name;
-    // const appointment_date = ngTime?.date_begin;
-    // const room_description = ngScheduleData?.room_description;
-    // const schedule_name = ngScheduleData?.schedule_name;
+    const orgId =
+      hospitalId === "0" ? appointmentUserData?.AttachmentID : hospitalId;
+    const schedule_id = ngScheduleData?.schedule_id;
+    const doctorName = ngDoctor?.full_name;
+    const appointment_date = ngTime?.date_begin;
+    const room_description = ngScheduleData?.room_description;
+    const schedule_name = ngScheduleData?.schedule_name;
+    const patientName = appointmentUserData?.FIO;
+
+    if (IIN && orgId && schedule_id && appointment_date) {
+      const info: AppointmentInfoType = {
+        doctorName,
+        orgId,
+        timeStart: formatDateFromString(appointment_date, "HH:mm"),
+        data: formatDateFromString(appointment_date, "YYYYMMDD"),
+        specializationName: ngSpeciality?.doc_speciality,
+        patientName,
+        room_description,
+        apiVersion: "2",
+        schedule_name,
+      };
+
+      // dispatch(
+      // createNGAppointment(
+      // orgId,
+      // schedule_id,
+      // appointment_date,
+      // appointmentIIN,
+      // info
+      // )
+      // );
+      dispatch(
+        createNGAppointment("867", schedule_id, appointment_date, IIN, info)
+      );
+    }
+  };
+
+  const clearState = () => {
+    setStep(0);
+    dispatch(appointmentActions.setAppointmentUserData(null));
+    dispatch(appointmentActions.setAppointmentError(null));
+    dispatch(hospitalsActions.setHospitalsError(null));
+    dispatch(appointmentActions.setNGSpecialities(null));
+    dispatch(appointmentActions.setNGAvailablesDate(null));
+    dispatch(appointmentActions.setNGAppointmentSaveResult(null));
+    dispatch(appointmentActions.setNGDoctors([]));
+    setNgScheduleData(null);
+    setNgDate(null);
+    setNGDoctor(null);
+    setNGSpeciality(null);
+    setNgTime(null);
+    setRecordType("По ФИО");
+    setAttachmentRecordType("К участковому врачу");
+    setIIN("");
   };
 
   /***************************/
@@ -297,6 +356,13 @@ const AppointmentPage = () => {
           <SelectDateForm
             goBack={backFromSelectDate}
             submitForm={createAppointment}
+            setDate={setNgDate}
+            selectedDate={ngDate}
+            setTime={setNgTime}
+            selectedTime={ngTime}
+            selectedSchedule={ngScheduleData}
+            setSchedule={setNgScheduleData}
+            clearError={backFromSelectDate}
           />
         );
 
@@ -304,6 +370,27 @@ const AppointmentPage = () => {
         return null;
     }
   };
+
+  if (saveAppointmentLoading) {
+    return <Preloader />;
+  }
+
+  if (saveAppointmentResult) {
+    return (
+      <Result
+        status="success"
+        title={`Вы успешно записали на прием ${saveAppointmentResult.patientName}`}
+        subTitle={`Прием начнется ${formatServerDate(
+          saveAppointmentResult.data
+        )} в ${saveAppointmentResult.timeStart}`}
+        extra={[
+          <Button type="primary" key="1" onClick={clearState}>
+            Продолжить
+          </Button>,
+        ]}
+      />
+    );
+  }
 
   return (
     <>

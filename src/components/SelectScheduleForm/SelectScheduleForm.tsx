@@ -14,6 +14,7 @@ import {
   getSpecialitiesState,
   getSpecialitiesLoadingState,
   getAppointmentErrorMessageState,
+  getAppointmentUserDataState,
 } from "../../store/selectors/appointment";
 import { DoctorSelect } from "../DoctorSelect/DoctorSelect";
 import { SpecialitySelect } from "../SpecialitySelect/SpecialitySelect";
@@ -41,6 +42,8 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
 
   const appointmentError = useSelector(getAppointmentErrorMessageState);
 
+  const appointmentUserData = useSelector(getAppointmentUserDataState);
+
   const dispatch = useDispatch();
   const { sm } = useBreakpoint();
 
@@ -57,16 +60,23 @@ export const SelectScheduleForm: FC<SelectScheduleFormProps> = ({
   }, [setSpecialities, specialities]);
 
   useEffect(() => {
-    if (hospitalId) {
+    const orgId =
+      hospitalId === "0" ? appointmentUserData?.AttachmentID : hospitalId;
+    if (orgId) {
       if (recordType === "По ФИО" && !doctors) {
-        // dispatch(getDoctors(hospitalId));
-        dispatch(getDoctors("867"));
+        dispatch(getDoctors(orgId));
       } else if (recordType === "По специализации" && !specialities) {
-        // dispatch(getSpecialities(hospitalId));
-        dispatch(getSpecialities("867"));
+        dispatch(getSpecialities(orgId));
       }
     }
-  }, [dispatch, recordType, hospitalId, doctors, specialities]);
+  }, [
+    dispatch,
+    recordType,
+    hospitalId,
+    doctors,
+    specialities,
+    appointmentUserData?.AttachmentID,
+  ]);
 
   const handleChangeRecordMethod = (value: SegmentedValue) => {
     setRecordType(value as RecordMethodType);

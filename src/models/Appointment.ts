@@ -1,5 +1,4 @@
 export type AppointmentInfoType = {
-  orgName?: string;
   doctorName?: string;
   orgId?: string;
   timeStart?: string;
