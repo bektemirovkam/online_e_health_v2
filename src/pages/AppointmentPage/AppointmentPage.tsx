@@ -249,6 +249,10 @@ const AppointmentPage = () => {
     }
   };
 
+  const clearSelectDateError = () => {
+    dispatch(appointmentActions.setAppointmentError(null));
+  };
+
   const createAppointment = () => {
     const orgId =
       hospitalId === "0" ? appointmentUserData?.AttachmentID : hospitalId;
@@ -272,17 +276,8 @@ const AppointmentPage = () => {
         schedule_name,
       };
 
-      // dispatch(
-      // createNGAppointment(
-      // orgId,
-      // schedule_id,
-      // appointment_date,
-      // appointmentIIN,
-      // info
-      // )
-      // );
       dispatch(
-        createNGAppointment("867", schedule_id, appointment_date, IIN, info)
+        createNGAppointment(orgId, schedule_id, appointment_date, IIN, info)
       );
     }
   };
@@ -362,7 +357,7 @@ const AppointmentPage = () => {
             selectedTime={ngTime}
             selectedSchedule={ngScheduleData}
             setSchedule={setNgScheduleData}
-            clearError={backFromSelectDate}
+            clearError={clearSelectDateError}
           />
         );
 
