@@ -1,0 +1,43 @@
+.title {
+    font-size: 20px;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+}
+.infoItem{
+    display: flex;
+    transition: background .3s;
+    border: 1px solid rgba(0,0,0,.06);
+    border-top: none;
+}
+.infoItem:hover {
+    background-color: #fafafa;
+    cursor: pointer;
+}
+.infoItem:first-child {
+    border-top: 1px solid rgba(0,0,0,.06);
+}
+.infoLabel {
+    background-color: #fafafa;
+    padding: 16px;
+    border-right: 1px solid rgba(0,0,0,.06);
+    flex: 0 0 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.infoValue {
+    padding: 16px;
+    text-align: left;
+}
+
+@media (max-width: 490px) {
+    .infoValue, .infoLabel {
+        padding: 8px;
+    }
+}

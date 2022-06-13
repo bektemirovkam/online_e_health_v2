@@ -101,17 +101,9 @@ export const SecondForm: FC<SecondFormProps> = ({
 
   return (
     <Col className="form">
-      <Row justify="center">
-        {appointmentUserData && (
-          <UserDataBox
-            appointmentUserData={appointmentUserData}
-            title={<Text className={styles.title}>Информация о пациенте</Text>}
-            column={{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }}
-            size={sm ? "default" : "small"}
-            bordered
-          />
-        )}
-      </Row>
+      {appointmentUserData && (
+        <UserDataBox appointmentUserData={appointmentUserData} />
+      )}
       {hospitalId === "0" && (
         <>
           <Row justify="center">
